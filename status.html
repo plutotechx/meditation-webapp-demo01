@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Status - Daily Meditation</title>
+  <!-- UpdatedAt: 2026-03-17 11:36 (+07:00) | Change: add _bust param to bypass Cloudflare cache -->
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:rgba(255,255,255,.08);
+      --border:rgba(255,255,255,.12);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.75);
+      --input:rgba(0,0,0,.22);
+      --btn:#6aa9ff;
+      --btnText:#081122;
+      --danger:#ff6a6a;
+      --ok:#65ffb3;
+      --radius:18px;
+
+      --tint-ok: rgba(101,255,179,.16);
+      --tint-bad: rgba(255,106,106,.16);
+      --tint-border-ok: rgba(101,255,179,.34);
+      --tint-border-bad: rgba(255,106,106,.34);
+
+      --lvl0: rgba(255,106,106,.18);
+      --lvl0b: rgba(255,106,106,.42);
+      --lvl1: rgba(255,170,90,.18);
+      --lvl1b: rgba(255,170,90,.42);
+      --lvl2: rgba(255,230,110,.18);
+      --lvl2b: rgba(255,230,110,.42);
+      --lvl3: rgba(101,255,179,.18);
+      --lvl3b: rgba(101,255,179,.42);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      margin:0;
+      background:var(--bg);
+      color:var(--text)
+    }
+    .wrap{max-width:820px;margin:0 auto;padding:24px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:18px;
+      position:relative;
+    }
+
+    .headerBlock{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      margin-bottom:8px;
+      position:relative;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:22px;
+      font-weight:950;
+      letter-spacing:.2px;
+      width:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+    }
+    .muted{
+      color:var(--muted);
+      margin:0 0 10px;
+      line-height:1.55;
+      font-weight:900;
+      letter-spacing:.2px;
+      width:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+    }
+
+    .updatedCorner{
+      position:absolute;
+      top:14px;
+      right:14px;
+      font-size:12px;
+      font-weight:900;
+      color:rgba(234,240,255,.78);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      padding:6px 10px;
+      border-radius:999px;
+      user-select:none;
+      -webkit-user-select:none;
+      display:block;
+    }
+
+    label{display:block;margin:12px 0 6px}
+    select{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background:var(--input);
+      color:#fff;
+      padding:12px 12px;
+      outline:none
+    }
+    button{
+      margin-top:14px;
+      width:100%;
+      padding:12px 14px;
+      border:0;
+      border-radius:14px;
+      background:var(--btn);
+      color:var(--btnText);
+      font-weight:900;
+      cursor:pointer
+    }
+    button:disabled{opacity:.6;cursor:not-allowed}
+
+    .msg{margin-top:12px;min-height:22px;white-space:pre-line}
+    .msg.ok{color:var(--ok)}
+    .msg.bad{color:var(--danger)}
+
+    .topline{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    a.btnlink{flex:1;text-decoration:none}
+    a.btnlink button{
+      width:100%;
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.14)
+    }
+
+    .resultHeader{
+      margin-top:14px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      line-height:1.6;
+      font-weight:950;
+      text-align:center;
+    }
+    .resultHeader .line{ font-size:16px; letter-spacing:.2px; }
+
+    .boxes{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:12px;
+    }
+
+    .box{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      padding:14px 12px;
+      min-height:122px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      text-align:center;
+      box-shadow:0 14px 40px rgba(0,0,0,.25);
+      position:relative;
+      overflow:hidden;
+    }
+    .box.ok{
+      background:linear-gradient(180deg, var(--tint-ok), rgba(0,0,0,.16));
+      border-color:var(--tint-border-ok);
+    }
+    .box.bad{
+      background:linear-gradient(180deg, var(--tint-bad), rgba(0,0,0,.16));
+      border-color:var(--tint-border-bad);
+    }
+    .box.sum{ background:rgba(0,0,0,.18); border-color:rgba(255,255,255,.12); }
+    .box.sum.lvl0{ background:linear-gradient(180deg, var(--lvl0), rgba(0,0,0,.16)); border-color:var(--lvl0b); }
+    .box.sum.lvl1{ background:linear-gradient(180deg, var(--lvl1), rgba(0,0,0,.16)); border-color:var(--lvl1b); }
+    .box.sum.lvl2{ background:linear-gradient(180deg, var(--lvl2), rgba(0,0,0,.16)); border-color:var(--lvl2b); }
+    .box.sum.lvl3{ background:linear-gradient(180deg, var(--lvl3), rgba(0,0,0,.16)); border-color:var(--lvl3b); }
+
+    .divider{ width:76%; height:1px; background:rgba(255,255,255,.14); margin-top:2px; display:block; }
+
+    .titleRowInline{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; }
+    .boxTitle{ font-weight:1000; color:rgba(234,240,255,.96); font-size:20px; letter-spacing:.2px; line-height:1.1; }
+    .badgeInline{ width:34px;height:34px;border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); display:flex;align-items:center;justify-content:center; }
+    .badgeInline.ok{ border-color:rgba(101,255,179,.44); background:rgba(101,255,179,.14); }
+    .badgeInline.bad{ border-color:rgba(255,106,106,.44); background:rgba(255,106,106,.14); }
+
+    .time{ font-weight:1100; font-size:28px; letter-spacing:.2px; line-height:1; }
+    .time.muted{ color:rgba(234,240,255,.55); font-weight:900; }
+
+    .sumStack{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+    .sumTag{ font-weight:1100; font-size:18px; letter-spacing:.2px; padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); }
+    .sumBig{ font-size:54px; font-weight:1200; line-height:1; margin:0; color:rgba(234,240,255,.96); }
+    .sumBig.ok{ color: var(--ok); }
+    .sumBig.bad{ color: var(--danger); }
+
+    .updatedFooter{ display:none; text-align:center; font-size:12px; font-weight:900; letter-spacing:.2px; color:rgba(234,240,255,.72); user-select:none; -webkit-user-select:none; margin-top:10px; }
+    .updatedFooter .pill{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); }
+    .updatedFooter .dot{ width:8px;height:8px;border-radius:99px; background:rgba(101,255,179,.95); box-shadow:0 0 0 4px rgba(101,255,179,.18); }
+
+    #backBottom{ display:none; }
+
+    @media (max-width:760px){
+      .wrap{ padding:16px; }
+      .updatedCorner{ display:none; }
+      .updatedFooter{ display:block; }
+      .boxes{ grid-template-columns:1fr; }
+      .box{ min-height:104px; padding:14px 14px; }
+      .actionStack{ margin-top:16px; padding-bottom:12px; }
+      .actionStack .topline{ margin-top:10px; }
+      .actionStack a.btnlink button{ border-radius:999px; padding:12px 14px; }
+      .actionStack #checkBtn{ border-radius:18px; padding:14px 16px; }
+      #backTop{ display:none; }
+      #backBottom{ display:flex; }
+      #backBottom a.btnlink button{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); color:rgba(234,240,255,.92); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card" id="pageCard">
+
+      <div class="headerBlock">
+        <div class="updatedCorner" id="updatedCorner">อัปเดตล่าสุด —</div>
+        <h1>Check meditation status</h1>
+        <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
+      </div>
+
+      <label>รายชื่อ</label>
+      <select id="nameSel">
+        <option value="">— เลือกชื่อ —</option>
+      </select>
+
+      <label>วันที่ต้องการตรวจสอบ</label>
+      <select id="dateSel"></select>
+
+      <div class="actionStack" id="actionStack">
+        <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
+
+        <div class="updatedFooter" id="updatedFooter">
+          <span class="pill">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="updatedFooterText">อัปเดตล่าสุด —</span>
+          </span>
+        </div>
+
+        <div class="topline" id="backBottom">
+          <a class="btnlink" href="/"><button type="button">กลับไปบันทึกข้อมูล</button></a>
+        </div>
+      </div>
+
+      <div class="msg" id="out"></div>
+
+      <div class="topline" id="backTop">
+        <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  const pageCard = document.getElementById("pageCard");
+  const weekHeaderEl = document.getElementById("weekHeader");
+  const nameSel = document.getElementById("nameSel");
+  const dateSel = document.getElementById("dateSel");
+  const btn = document.getElementById("checkBtn");
+  const out = document.getElementById("out");
+  const updatedCorner = document.getElementById("updatedCorner");
+  const updatedFooterText = document.getElementById("updatedFooterText");
+
+  const NAMES = [
+    "สุรเชษฐ์ (ตั้ม)", "บัญญัติ (แดง)", "รัชเศรษฐ์ (ยศ)",
+    "ชนุดม (ดอน)", "ทรงชัย (ทรง)", "สุรุ่งรัตน์ (เก่ง)",
+    "อติพร (โอ)", "เกสณี (เก๋)", "สมภพ (เอก)",
+    "ฐิตภรณ์ (เบลล์)", "อุมาพร (นก)", "ณัฐพล (ท๊อด)",
+    "กิตติพงษ์ (พี)", "ธนพร (พร)", "รายาวดี (เฟริน)",
+    "บัญญัติ (บอย)", "ธีรพล (ต้อม)", "นริศ (เอ็กซ์)",
+    "กิตติ (ตี๋)", "จารุวรรณ (จุ๋ม)", "ณัฏฐา (เมย์)",
+    "วรินทร (ต่อ)", "กิตติศักดิ์ (ใหม่)", "ราชัย (ชัย)",
+    "รัญชนา (จีน่า)", "อรวรา (ผักแพว)", "ธนกฤษ (พิว)",
+    "บุญฤทธิ์ (ใหม่)", "จิรายุทธ (ลีโอ)", "นนทชา (วิว)",
+    "ยิ่งลักษณ์ (กุ้ง)", "ศราวุฒิ (บอล)", "นันทพงศ์ (โบ๊ท)",
+    "ณัฐวุฒิ (เฟียส)", "กฤษดา (โจ)", "รณฤทธิ์ (เม่น)",
+    "ธีรศักดิ์ (ต่าย)", "ณภัทร (ตัน)", "เอกพจน์ (เอก)"
+  ];
+
+  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
+
+  function isMobile(){ return window.matchMedia && window.matchMedia("(max-width: 760px)").matches; }
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+  function thaiDateLabelLocalShort(d){
+    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
+  }
+  function mondayOfWeekLocal(d){
+    const x = new Date(d); x.setHours(0,0,0,0);
+    const day = x.getDay();
+    const diff = (day===0) ? -6 : (1-day);
+    x.setDate(x.getDate()+diff);
+    return x;
+  }
+
+  function showWeekHeader(){
+    const now = new Date();
+    const mon = mondayOfWeekLocal(now);
+    const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+    weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocalShort(mon)} – อาทิตย์ ${thaiDateLabelLocalShort(sun)}`;
+  }
+
+  function buildDateOptions(){
+    const now = new Date();
+    const mon = mondayOfWeekLocal(now);
+    const todayISO = toISODateLocal(now);
+    dateSel.innerHTML = "";
+    for (let i=0;i<7;i++){
+      const d = new Date(mon); d.setDate(mon.getDate()+i);
+      const iso = toISODateLocal(d);
+      const label = `${TH_DOW[i]} ${thaiDateLabelLocalShort(d)}${iso===todayISO ? " (วันนี้)" : ""}`;
+      const opt = document.createElement("option");
+      opt.value = iso;
+      opt.textContent = label;
+      dateSel.appendChild(opt);
+    }
+    dateSel.value = todayISO;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  function formatISOToThaiLong(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"numeric" });
+  }
+
+  function setUpdatedNow(){
+    const now = new Date();
+    const hhmm = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+    updatedCorner.textContent = `อัปเดตล่าสุด ${hhmm}`;
+    updatedFooterText.textContent = `อัปเดตล่าสุด ${hhmm}`;
+  }
+
+  function normalizeSession(v){
+    if (v && typeof v === "object") {
+      const mark = (v.mark ?? v.status ?? v.icon ?? "").toString().trim();
+      const done =
+        (v.done === true) ||
+        (mark === "✅") ||
+        (/^✅$/i.test(mark)) ||
+        (/ok|done|true|ครบ/i.test(mark));
+      const time = (v.time || v.hhmm || v.local || "").toString().trim();
+      return { done, timeText: time ? `${time} น.` : "—" };
+    }
+    const s = (v ?? "").toString().trim();
+    if (!s || s === "—" || s === "-") return { done:false, timeText:"—" };
+    const done = /✅|ok|done|true|ครบ/i.test(s);
+    const m = s.match(/(\d{1,2}:\d{2})/);
+    return { done, timeText: m ? `${m[1]} น.` : "—" };
+  }
+
+  function iconSvg(type){
+    if (type === "ok") {
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20 7L10.5 16.5L4 10" stroke="#65ffb3" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    }
+    return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M18 6L6 18M6 6l12 12" stroke="#ff6a6a" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  function renderBoxes(data){
+    const s1 = normalizeSession(data.sessions?.s1);
+    const s2 = normalizeSession(data.sessions?.s2);
+    const s3 = normalizeSession(data.sessions?.s3);
+    const doneCount = Number.isFinite(Number(data.doneCount))
+      ? Number(data.doneCount)
+      : [s1.done, s2.done, s3.done].filter(Boolean).length;
+    const dateISO = (data.logDate || "").toString();
+    const name = (data.name || "").toString();
+    const headerLine = `${formatISOToThaiLong(dateISO)} | ${name}`;
+    const headerHtml = `<div class="resultHeader"><div class="line">${escapeHtml(headerLine)}</div></div>`;
+
+    function boxHtml(title, st){
+      const cls = st.done ? "ok" : "bad";
+      const timeCls = (st.timeText === "—") ? "time muted" : "time";
+      return `
+        <div class="box ${cls}">
+          <div class="titleRowInline">
+            <div class="boxTitle">${escapeHtml(title)}</div>
+            <div class="badgeInline ${cls}">${iconSvg(cls)}</div>
+          </div>
+          <div class="divider"></div>
+          <div class="${timeCls}">${escapeHtml(st.timeText)}</div>
+        </div>`;
+    }
+
+    const lvl = Math.max(0, Math.min(3, doneCount));
+    const lvlClass = ["lvl0","lvl1","lvl2","lvl3"][lvl];
+    const sumTag = (lvl === 3) ? "ครบ" : "สรุป";
+    const sumBigClass = (lvl === 3) ? "sumBig ok" : (lvl === 0 ? "sumBig bad" : "sumBig");
+    const sumBox = `
+      <div class="box sum ${lvlClass}">
+        <div class="sumStack">
+          <div class="sumTag">${sumTag}</div>
+          <div class="${sumBigClass}">${lvl}/3</div>
+        </div>
+      </div>`;
+
+    out.className = "";
+    const mobileFirst = isMobile();
+    out.innerHTML = `
+      ${headerHtml}
+      <div class="boxes">
+        ${mobileFirst ? sumBox : ""}
+        ${boxHtml("ครั้งที่ 1", s1)}
+        ${boxHtml("ครั้งที่ 2", s2)}
+        ${boxHtml("ครั้งที่ 3", s3)}
+        ${mobileFirst ? "" : sumBox}
+      </div>`;
+    setUpdatedNow();
+  }
+
+  function setLoading(isLoading, msg){
+    btn.disabled = isLoading;
+    btn.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
+    if (isLoading) { out.className = "msg"; out.textContent = msg || "กำลังตรวจสอบ..."; }
+  }
+
+  function loadNames(){
+    nameSel.innerHTML =
+      `<option value="">— เลือกชื่อ —</option>` +
+      NAMES.map(n => `<option>${escapeHtml(n)}</option>`).join("");
+  }
+
+  async function runCheck(){
+    const name = (nameSel.value || "").trim();
+    const logDate = (dateSel.value || "").trim();
+    if (!name || !logDate) {
+      out.className = "msg bad";
+      out.textContent = "กรุณาเลือกรายชื่อ และ วันที่ต้องการตรวจสอบ";
+      return;
+    }
+    setLoading(true, "กำลังตรวจสอบ...");
+    try {
+      const q = new URLSearchParams({ name, logDate });
+      q.set("_bust", Date.now()); // ✅ bypass Cloudflare cache ทุกครั้งที่กดตรวจสอบ
+      const res = await fetch(`/api/checkStatus?${q.toString()}`);
+      const data = await res.json().catch(()=>({}));
+      if (!res.ok || !data.ok) {
+        out.className = "msg bad";
+        out.textContent = `ตรวจสอบไม่สำเร็จ: ${data.error || "unknown_error"}`;
+        setLoading(false);
+        return;
+      }
+      renderBoxes(data);
+      setLoading(false);
+    } catch (e) {
+      out.className = "msg bad";
+      out.textContent = `ตรวจสอบไม่สำเร็จ: ${e}`;
+      setLoading(false);
+    }
+  }
+
+  let autoTimer = null;
+  function scheduleAutoCheck(){
+    if (!isMobile()) return;
+    const name = (nameSel.value || "").trim();
+    const logDate = (dateSel.value || "").trim();
+    if (!name || !logDate) return;
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(() => runCheck(), 250);
+  }
+
+  btn.addEventListener("click", runCheck);
+  nameSel.addEventListener("change", scheduleAutoCheck);
+  dateSel.addEventListener("change", scheduleAutoCheck);
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") { ev.preventDefault(); runCheck(); }
+  });
+
+  showWeekHeader();
+  buildDateOptions();
+  loadNames();
+  setUpdatedNow();
+</script>
+</body>
+</html>

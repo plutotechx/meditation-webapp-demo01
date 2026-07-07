@@ -1,0 +1,1448 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Daily Meditation</title>
+  <!-- UpdatedAt: 2026-02-10 09:00 (+07:00) -->
+
+  <style>
+    :root{
+      --bg:#0a1322;
+      --card:rgba(255,255,255,.07);
+      --border:rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.72);
+
+      --good:#30d16a;
+      --mid:#f3c43a;
+      --orange:#ff8c2a;
+      --bad:#ff4d4d;
+
+      --none:rgba(255,255,255,.28);
+
+      --radius:18px;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
+      background:
+        radial-gradient(1200px 600px at 25% 0%, rgba(88,140,255,.16), transparent 60%),
+        radial-gradient(900px 500px at 80% 15%, rgba(0,240,255,.12), transparent 55%),
+        linear-gradient(180deg, #081224 0%, #070f1e 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 26px}
+
+    .topRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    h1{margin:0;font-size:24px;font-weight:900;letter-spacing:.2px}
+    .titleRow{display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-wrap:wrap}
+    .lastUpd{
+      height:34px;
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      font-weight:900;
+      color:rgba(234,240,255,.85);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      white-space:nowrap;
+      box-shadow:0 12px 34px rgba(0,0,0,.22);
+    }
+
+
+    .weekMenu{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .seg{
+      display:inline-flex;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      padding:6px;
+      gap:6px;
+      box-shadow:0 12px 34px rgba(0,0,0,.26);
+    }
+    .seg button{
+      border:0;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:900;
+      color:rgba(234,240,255,.85);
+      background:transparent;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .seg button.active{
+      color:#071120;
+      background:rgba(106,169,255,.95);
+      box-shadow:0 10px 24px rgba(106,169,255,.22);
+    }
+
+        .dotLive{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--good);
+      box-shadow:0 0 0 0 rgba(48,209,106,.55);
+      animation:pulseG 1.2s infinite;
+      flex:0 0 auto;
+    }
+    @keyframes pulseG{
+      0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
+      70%{ box-shadow:0 0 0 10px rgba(48,209,106,0) }
+      100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
+    }
+
+    .weekTitle{font-size:18px;font-weight:900;margin:10px 0 12px;color:rgba(234,240,255,.92)}
+    .muted{color:var(--muted)}
+
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin:6px 0 14px;
+      align-items:stretch;
+    }
+    @media (max-width:900px){ .kpis{grid-template-columns:1fr;} }
+
+    .kpi{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:16px 16px 14px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+      min-height:160px;
+    }
+    .kpi:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:radial-gradient(closest-side at 65% 0%, rgba(120,200,255,.25), transparent 70%);
+      pointer-events:none;
+    }
+    .kpi .label{font-size:14px;color:var(--muted);font-weight:800}
+    .kpi .value{font-size:44px;font-weight:900;line-height:1;margin-top:10px}
+    .kpi .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
+    .value.good{color:var(--good)}
+    .value.bad{color:var(--bad)}
+
+    /* ===== Daily lists (today) ===== */
+    .kpi .kpiHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .kpi .kpiHead .countBadge{
+      font-size:12px;font-weight:800;
+      padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(234,240,255,.9);
+      white-space:nowrap;
+    }
+    .nameSection{margin-top:10px}
+    .nameSection .secTitle{font-size:12px;color:rgba(234,240,255,.72);font-weight:800;margin-bottom:8px}
+    .nameList{
+      display:flex;flex-wrap:wrap;gap:8px;
+      max-height:160px;overflow:auto;
+      padding-right:6px;
+    }
+    .nameItem{
+      font-size:12px;font-weight:800;
+      padding:7px 10px;border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      color:rgba(234,240,255,.92);
+    }
+    .nameItem.good{border-color:rgba(48,209,106,.35);background:rgba(48,209,106,.10)}
+    .nameItem.mid{border-color:rgba(243,196,58,.35);background:rgba(243,196,58,.10)}
+    .nameItem.bad{border-color:rgba(255,77,77,.35);background:rgba(255,77,77,.10)}
+
+    
+    /* ===== Weekly complete breakdown (per day) ===== */
+.wkBox{ margin-top:12px; }
+.wkHeader{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;}
+.wkHeader .pill{ padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); font-weight:950; color:rgba(234,240,255,.9); white-space:nowrap;}
+.wkList{ display:grid; gap:10px; max-height:330px; overflow:auto; padding-right:6px;}
+.wkRow{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "day  stat"
+    "bar  bar";
+  gap:10px 12px;
+  align-items:center;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.045);
+  box-shadow: 0 10px 28px rgba(0,0,0,.22);
+}
+.wkDay{ grid-area:day; font-weight:950; color:rgba(234,240,255,.92); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.wkBar{ grid-area:bar; height:12px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.10); overflow:hidden; position:relative;}
+.wkBar > i{ display:block; height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg, rgba(48,209,106,.98), rgba(48,209,106,.55)); box-shadow:0 0 0 1px rgba(48,209,106,.20) inset;}
+.wkBar > i.zero{ background:rgba(255,255,255,.16); box-shadow:none;}
+.wkStat{ grid-area:stat; font-weight:950; color:rgba(234,240,255,.82); white-space:nowrap; justify-self:end; }
+
+    /* Prevent green bar from colliding with long dates (mobile + desktop) */
+    @media (max-width: 820px){
+      .wkRow{
+        grid-template-columns: 1fr 72px;
+        grid-template-areas:
+          "day stat"
+          "bar bar";
+        row-gap:10px;
+      }
+      .wkDay{ grid-area:day; }
+      .wkBar{ grid-area:bar; }
+      .wkStat{ grid-area:stat; }
+    }
+    .wkStat .wkNum{display:inline-block; min-width:22px; text-align:right;}
+    .wkStat .wkPct{opacity:.75; margin-left:6px;}
+
+/* Pie + legend (3 segments) */
+    .legend{display:grid;gap:6px}
+    .legendRow{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(234,240,255,.82)}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .dot.good{background:var(--good)}
+    .dot.bad{background:var(--bad)}
+    .dot.none{background:rgba(255,255,255,.28)}
+
+    .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
+
+    /* ✅ Premium Donut with center label */
+    .pie{
+      width:116px;height:116px;border-radius:999px;
+      background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 16px 45px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06);
+      position:relative;
+      flex:0 0 auto;
+      transition: background 260ms ease;
+    }
+
+    .pieInner{
+      position:absolute; inset:12px;
+      background:rgba(10,19,34,.88);
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      pointer-events:none;
+    }
+    .pieCenter{
+      position:absolute; inset:12px;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      text-align:center;
+      pointer-events:none;
+      gap:2px;
+    }
+
+    /* SVG donut (smooth, crisp) */
+    .pieSvg{ width:100%; height:100%; display:block; transform:rotate(-90deg); }
+    .pieTrack{
+      fill:none;
+      stroke:rgba(255,255,255,.10);
+      stroke-width:14;
+    }
+    .pieSeg{
+      fill:none;
+      stroke-width:14;
+      stroke-linecap:butt;
+      stroke-dasharray:0 999;
+      stroke-dashoffset:0;
+      transition: stroke-dasharray .45s ease, stroke-dashoffset .45s ease;
+    }
+    .pieSeg.good{ stroke:var(--good); }
+    .pieSeg.bad{  stroke:var(--bad); }
+    .pieSeg.none{ stroke:var(--none); }
+    .pieCenterBig{
+      font-size:26px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      line-height:1.05;
+      color:rgba(234,240,255,.96);
+    }
+    .pieCenterSub{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.2px;
+      color:rgba(234,240,255,.78);
+    }
+    .pieCenterTiny{
+      font-size:11px;
+      font-weight:900;
+      color:rgba(234,240,255,.62);
+    }
+
+    
+    /* ===== Compare today vs previous day (within selected week) ===== */
+    .cmpWrap{
+      margin-top:12px;
+      padding:12px 12px 10px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+    }
+    .cmpTitle{font-size:12px;font-weight:900;color:rgba(234,240,255,.78);margin-bottom:10px}
+    .cmpGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .cmpLbl{font-size:12px;font-weight:950;color:rgba(234,240,255,.90);margin-bottom:6px}
+    .cmpBar{
+      height:10px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .cmpBar > i{
+      display:block;height:100%;width:0%;
+      background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
+    }
+    .cmpVal{margin-top:6px;font-size:12px;font-weight:950;color:rgba(234,240,255,.84)}
+    .cmpDelta{margin-top:10px;font-size:12px;font-weight:950;color:rgba(234,240,255,.86)}
+    .cmpDelta .up{color:var(--good)}
+    .cmpDelta .down{color:var(--bad)}
+
+.table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      box-shadow:var(--shadow);
+    }
+    .table thead th{
+      text-align:left;
+      font-size:14px;
+      font-weight:900;
+      color:rgba(234,240,255,.82);
+      padding:14px 14px;
+      background:rgba(0,0,0,.20);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      white-space:nowrap;
+    }
+    .table tbody td{
+      padding:14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      vertical-align:top;
+    }
+    .table tbody tr:last-child td{border-bottom:none}
+    .name{font-size:16px;font-weight:900}
+
+    .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:12px;
+      font-weight:900;border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      min-width:110px;justify-content:center;
+    }
+    .dot{width:12px;height:12px;border-radius:999px;background:var(--mid)}
+    .chip.good{color:#dfffe9}
+    .chip.good .dot{background:var(--good)}
+    .chip.mid{color:#fff5d0}
+    .chip.mid .dot{background:var(--mid)}
+    .chip.bad{color:#ffd9d9}
+    .chip.bad .dot{background:var(--bad)}
+
+    .progress{
+      width:min(280px, 100%);
+      height:10px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .progress > i{
+      display:block;height:100%;
+      width:0%;
+      background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.55));
+    }
+    .progress.mid > i{ background:linear-gradient(90deg, rgba(243,196,58,.95), rgba(243,196,58,.55)); }
+    .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
+    .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
+
+    .days{
+      display:grid;
+      grid-template-columns:repeat(7, minmax(0, 1fr));
+      gap:8px;
+      min-width:560px;
+    }
+    @media (max-width:1100px){ .days{min-width:460px} }
+    @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
+
+    .daybox{
+      border-radius:12px;
+      padding:8px 8px 10px;
+      text-align:center;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.20);
+      user-select:none;
+      position:relative;
+      cursor:default;
+    }
+    .daybox.s3{
+      background:linear-gradient(180deg, rgba(48,209,106,.35), rgba(48,209,106,.18));
+      border-color:rgba(48,209,106,.35);
+    }
+    .daybox.s2{
+      background:linear-gradient(180deg, rgba(255,140,42,.32), rgba(255,140,42,.16));
+      border-color:rgba(255,140,42,.38);
+    }
+    .daybox.s1{
+      background:linear-gradient(180deg, rgba(243,196,58,.30), rgba(243,196,58,.16));
+      border-color:rgba(243,196,58,.35);
+    }
+    .daybox.s0{
+      background:linear-gradient(180deg, rgba(255,77,77,.30), rgba(255,77,77,.15));
+      border-color:rgba(255,77,77,.35);
+    }
+
+    .dayTop{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:6px;margin-bottom:8px;
+    }
+    .dayPill{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      line-height:1;
+      white-space:nowrap;
+      font-weight:950;
+    }
+    .dayNum{
+      font-size:13px;
+      opacity:.9;
+      font-weight:950;
+    }
+    .dayCount{
+      font-size:26px;
+      letter-spacing:.2px;
+      font-weight:1100;
+    }
+
+    .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+    .btn{
+      text-decoration:none;color:var(--text);
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      padding:10px 14px;border-radius:12px;
+      font-weight:900;
+    }
+    .btn:hover{background:rgba(255,255,255,.10)}
+
+    /* =========================================================
+       Tooltip (TIGHT - cut empty red area)
+       ========================================================= */
+    .hoverTip{
+      position:fixed;
+      z-index:99999;
+      display:none;
+
+      width:fit-content; /* ✅ ตัดพื้นที่ว่างด้านขวา */
+      max-width:calc(100vw - 24px);
+      min-width:200px; /* กันแคบเกิน */
+
+      background:rgba(10,16,26,.96);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      box-shadow:0 18px 55px rgba(0,0,0,.55);
+
+      padding:8px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color:var(--text);
+      overflow:hidden;
+      pointer-events:none;
+    }
+    .hoverTip.show{display:block}
+
+    .hoverTip .hdr{
+      font-weight:950;
+      font-size:15px;
+      margin:2px 0 8px;
+      color:rgba(234,240,255,.95);
+      text-align:center; /* ✅ หัวกรอบอยู่กึ่งกลาง */
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .tipRow{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start; /* ✅ ไม่ดันเวลาไปขวาสุด */
+      gap:10px;
+      padding:8px 12px 8px 10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      margin-bottom:6px;
+    }
+    .tipRow:last-child{margin-bottom:0}
+
+    .tipLeft{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-weight:950;
+      min-width:0;
+      flex:0 0 auto; /* ✅ ไม่ขยายฝั่งซ้าย เพื่อไม่สร้างพื้นที่ว่าง */
+    }
+    .tipLabel{
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .tipSep{
+      font-weight:950;
+      font-size:14px;
+      opacity:.85;
+      line-height:1;
+      flex:0 0 auto;
+      margin:0 6px; /* ✅ ระยะรอบ ":" เท่ากันทุกบรรทัด */
+    }
+
+    .ico{
+      width:24px;height:24px;
+      border-radius:999px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.16);
+      flex:0 0 auto;
+    }
+    .ico.ok{background:rgba(48,209,106,.22); border-color:rgba(48,209,106,.40)}
+    .ico.no{background:rgba(255,77,77,.20); border-color:rgba(255,77,77,.40)}
+    .ico svg{display:block}
+
+    .tipTime{
+      font-weight:950;
+      font-size:14px;
+      opacity:.98;
+      white-space:nowrap;
+      flex:0 0 auto;
+      margin-left:0; /* ✅ คุมระยะด้วย tipSep */
+      text-align:left;
+    }
+    .tipTime.dim{opacity:.55}
+
+    .hoverTip .arrow{
+      position:absolute;
+      width:12px;height:12px;
+      background:rgba(10,16,26,.96);
+      border-left:1px solid rgba(255,255,255,.14);
+      border-top:1px solid rgba(255,255,255,.14);
+      transform:rotate(45deg);
+      top:-7px;
+      left:50%;
+      margin-left:-6px;
+    }
+
+    /* =========================================================
+       Mobile friendly (card view)
+       ========================================================= */
+    @media (max-width: 720px){
+      .wrap{padding:14px 10px 22px}
+
+      /* Mobile: header stack + leave room for top-right countdown pill */
+      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:0px;}
+      .topRow > div:first-child{width:100%; text-align:center;}
+      .weekMenu{width:100%; justify-content:center;}
+      .autoMini .dotLive{ width:10px; height:10px; }
+      .kpis{grid-template-columns:1fr}
+      .table thead{display:none}
+      .table, .table tbody, .table tr, .table td{display:block;width:100%}
+      .table{background:transparent;border:none;box-shadow:none}
+      .table tbody tr{
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.10);
+        border-radius:18px;
+        padding:12px 12px 14px;
+        margin-bottom:12px;
+        box-shadow:0 14px 40px rgba(0,0,0,.35);
+      }
+      .table tbody td{
+        border-bottom:none;
+        padding:10px 6px;
+      }
+      .table tbody td[data-label]::before{
+        content: attr(data-label);
+        display:block;
+        font-size:12px;
+        font-weight:900;
+        color:rgba(234,240,255,.70);
+        margin-bottom:6px;
+      }
+      .name{font-size:18px}
+      .pctRow{gap:10px}
+      .progress{width:100%}
+
+      .days{
+        min-width:0 !important; /* ✅ ไม่บังคับให้เลื่อนแนวนอน */
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+        gap:7px;
+      }
+      .daybox{padding:7px 7px 9px;border-radius:12px}
+      .dayCount{font-size:22px}
+    }
+
+    @media (max-width: 420px){
+      .days{grid-template-columns:repeat(3, minmax(0, 1fr));gap:7px}
+      .dayCount{font-size:20px}
+      .dayPill{font-size:11px;padding:4px 8px}
+    }
+
+    /* Mobile landscape: make 0/3-3/3 fit neatly (diagonal layout) */
+    @media (max-width: 900px) and (orientation: landscape){
+      .dayCount{
+        position:relative;
+        width:46px;
+        height:34px;
+        margin: 2px auto 0;
+        display:block;
+        font-weight:1000;
+        letter-spacing:.2px;
+      }
+      .dayCount .dcSep{ display:none; }
+      .dayCount .dcA, .dayCount .dcB{
+        position:absolute;
+        font-size:14px;
+        line-height:1;
+      }
+      .dayCount .dcA{ top:2px; left:4px; }
+      .dayCount .dcB{ bottom:2px; right:4px; }
+      .dayCount::before{
+        content:"";
+        position:absolute;
+        left:6px;
+        top:50%;
+        width:70px;
+        height:1px;
+        background:rgba(255,255,255,.22);
+        transform:rotate(-35deg);
+        transform-origin:left center;
+      }
+    }
+
+  
+</style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topRow">
+      <div>
+        <div class="titleRow"><h1>Dashboard Meditation</h1>
+  <div class="lastUpd" aria-live="polite" title="อัปเดตล่าสุด">
+    <span class="dotLive"></span>
+    <span>อัปเดตล่าสุด <span id="lastUpdated">--:--</span> น.</span>
+  </div>
+</div>
+      </div>
+
+      <div class="weekMenu">
+        <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
+          <button id="btnThis" class="active" role="tab" aria-selected="true">สัปดาห์นี้</button>
+          <button id="btnLast" role="tab" aria-selected="false">สัปดาห์ที่แล้ว</button>
+        </div>
+</div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label" id="dailyPieLabel">สัดส่วนวันนี้</div>
+        <div class="pieWrap">
+          <div class="pie" id="pie" role="img" aria-label="สัดส่วนวันนี้">
+            <svg class="pieSvg" viewBox="0 0 120 120" aria-hidden="true">
+  <defs>
+    <filter id="pieShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="rgba(0,0,0,.45)"/>
+    </filter>
+  </defs>
+  <!-- track -->
+  <circle class="pieTrack" cx="60" cy="60" r="46"></circle>
+
+  <!-- segments (order: good -> bad -> none) -->
+  <circle id="pieSegGood" class="pieSeg good" cx="60" cy="60" r="46" filter="url(#pieShadow)"></circle>
+  <circle id="pieSegBad"  class="pieSeg bad"  cx="60" cy="60" r="46" filter="url(#pieShadow)"></circle>
+  <circle id="pieSegNone" class="pieSeg none" cx="60" cy="60" r="46" filter="url(#pieShadow)"></circle>
+</svg>
+            <div class="pieCenter" aria-hidden="true">
+              <div class="pieCenterBig" id="pieCenterBig">--%</div>
+              <div class="pieCenterSub" id="pieCenterSub">ครบ 3 ครั้ง</div>
+              <div class="pieCenterTiny" id="pieCenterTiny">-/- คน</div>
+            </div>
+          </div>
+
+          <div class="legend" aria-label="legend">
+            <div class="legendRow"><span class="dot good"></span><span id="lgGood">ครบ 3 ครั้ง: -</span></div>
+            <div class="legendRow"><span class="dot bad"></span><span id="lgBad">ทำไม่ครบ: -</span></div>
+            <div class="legendRow"><span class="dot none"></span><span id="lgNone">ไม่ทำเลย: -</span></div>
+          </div>
+        </div>
+        <div class="muted" style="margin-top:10px" id="pieText">กำลังคำนวณ...</div>
+        <div class="cmpWrap" aria-label="compare">
+          <div class="cmpTitle">เทียบ "ครบ 3 ครั้ง" วันนี้ vs เมื่อวาน</div>
+          <div class="cmpGrid">
+            <div class="cmpCol">
+              <div class="cmpLbl" id="cmpTodayLabel">วันนี้</div>
+              <div class="cmpBar"><i id="cmpBarToday"></i></div>
+              <div class="cmpVal"><span id="cmpTodayPct">-</span></div>
+            </div>
+            <div class="cmpCol">
+              <div class="cmpLbl" id="cmpPrevLabel">เมื่อวาน</div>
+              <div class="cmpBar"><i id="cmpBarPrev"></i></div>
+              <div class="cmpVal"><span id="cmpPrevPct">-</span></div>
+            </div>
+          </div>
+          <div class="cmpDelta" id="cmpDelta">—</div>
+        </div>
+      </div>
+
+            <div class="kpi">
+        <div class="kpiHead">
+          <div class="label" id="weeklyCompleteLabel">สรุป "ครบ 3 ครั้ง" รายวัน</div>
+          <div class="countBadge" id="weeklyCompleteMeta">-</div>
+        </div>
+        <div class="wkList" id="weeklyCompleteList">
+          <span class="muted">กำลังโหลด...</span>
+        </div>
+        <div class="sub" id="weeklyCompleteSub" style="margin-top:10px">—</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpiHead">
+          <div class="label" id="dailyNotCompleteLabel">ทำไม่ครบวันนี้</div>
+          <div class="countBadge" id="dailyNotCompleteCount">-</div>
+        </div>
+
+        <div class="nameSection">
+          <div class="secTitle" id="partialTitle">ทำไม่ครบ (1–2 ครั้ง)</div>
+          <div class="nameList" id="dailyPartialList"><span class="muted">กำลังโหลด...</span></div>
+        </div>
+
+        <div class="nameSection">
+          <div class="secTitle" id="noneTitle">ไม่ทำเลย (0 ครั้ง)</div>
+          <div class="nameList" id="dailyNoneList"><span class="muted">กำลังโหลด...</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:26%">ชื่อ</th>
+          <th style="width:30%">% สัปดาห์</th>
+          <th style="width:10%">ครบทั้งวัน</th>
+          <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
+      </tbody>
+    </table>
+
+    <div class="btns">
+      <a class="btn" href="/">กลับหน้าบันทึกข้อมูล</a>
+      <a class="btn" href="/status.html">ไปหน้าตรวจสอบสถานะ</a>
+    </div>
+  </div>
+
+  <!-- Tooltip element -->
+  <div class="hoverTip" id="hoverTip" role="dialog" aria-hidden="true">
+    <div class="arrow"></div>
+    <div class="hdr" id="tipHdr">-</div>
+    <div id="tipBody"></div>
+  </div>
+
+<script>
+  // ====== CONFIG ======
+  const REFRESH_MS = 60_000; // 1 นาที
+
+  // state: weekOffset (0=this, -1=last)
+  let weekOffset = 0;
+
+  // UI refs
+  const btnThis = document.getElementById("btnThis");
+  const btnLast = document.getElementById("btnLast");
+
+  const elWeek = document.getElementById("weekHeader");
+  const tbody  = document.getElementById("tbody");
+
+  const pie = document.getElementById("pie");
+  const pieText = document.getElementById("pieText");
+  const pieCenterBig = document.getElementById("pieCenterBig");
+  const pieCenterSub = document.getElementById("pieCenterSub");
+  const pieCenterTiny = document.getElementById("pieCenterTiny");
+
+  const pieSegGood = document.getElementById("pieSegGood");
+  const pieSegBad  = document.getElementById("pieSegBad");
+  const pieSegNone = document.getElementById("pieSegNone");
+
+  const dailyPieLabel = document.getElementById("dailyPieLabel");
+  const lgGood = document.getElementById("lgGood");
+  const lgBad  = document.getElementById("lgBad");
+  const lgNone = document.getElementById("lgNone");
+
+  const weeklyCompleteLabel = document.getElementById("weeklyCompleteLabel");
+  const weeklyCompleteMeta  = document.getElementById("weeklyCompleteMeta");
+  const weeklyCompleteList  = document.getElementById("weeklyCompleteList");
+  const weeklyCompleteSub   = document.getElementById("weeklyCompleteSub");
+  const cmpTodayLabel = document.getElementById("cmpTodayLabel");
+  const cmpPrevLabel  = document.getElementById("cmpPrevLabel");
+  const cmpTodayPct   = document.getElementById("cmpTodayPct");
+  const cmpPrevPct    = document.getElementById("cmpPrevPct");
+  const cmpBarToday   = document.getElementById("cmpBarToday");
+  const cmpBarPrev    = document.getElementById("cmpBarPrev");
+  const cmpDelta      = document.getElementById("cmpDelta");
+
+  const dailyNotCompleteLabel = document.getElementById("dailyNotCompleteLabel");
+  const dailyNotCompleteCount = document.getElementById("dailyNotCompleteCount");
+  const dailyPartialList = document.getElementById("dailyPartialList");
+  const dailyNoneList    = document.getElementById("dailyNoneList");
+
+
+  const partialTitle = document.getElementById("partialTitle");
+  const noneTitle = document.getElementById("noneTitle");
+  function setLastUpdated(){
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    const el = document.getElementById("lastUpdated");
+    if (el) el.textContent = `${hh}:${mm}`;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>( {
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m] ));
+  }
+
+  function thaiDateFromISO(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
+  }
+
+  function thaiDayShortFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if (!y || !m || !d) return "-";
+    const dt = new Date(y, m-1, d);
+    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
+    return th[dt.getDay()];
+  }
+
+  // ✅ Tooltip header ไทยเป๊ะ: "จ. 9 ก.พ. 69"
+  function thaiTooltipHeaderFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if (!y || !m || !d) return "-";
+    const dt = new Date(y, m-1, d);
+
+    const thDow = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."][dt.getDay()];
+    const thMonth = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][dt.getMonth()];
+    const be2 = String((dt.getFullYear() + 543) % 100).padStart(2, "0");
+
+    return `${thDow} ${dt.getDate()} ${thMonth} ${be2}`;
+  }
+
+  // ===== Tooltip logic =====
+  const hoverTip = document.getElementById("hoverTip");
+  const tipHdr = document.getElementById("tipHdr");
+  const tipBody = document.getElementById("tipBody");
+  let tipVisible = false;
+  let tipAnchor = null;
+  const isTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+
+  function fmtTimeHHmm(v){
+    const s = String(v||"").trim();
+    if (!s) return "";
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (!m) return "";
+    const hh = String(Number(m[1])).padStart(2,"0");
+    const mm = String(Number(m[2])).padStart(2,"0");
+    return `${hh}:${mm}`; // add " น." at render time
+  }
+
+  function icon(ok){
+    if (ok){
+      return `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 7L10.5 16.5L4 10" stroke="#30d16a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+    }
+    return `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M18 6L6 18M6 6l12 12" stroke="#ff4d4d" stroke-width="2.8" stroke-linecap="round"/>
+      </svg>
+    `;
+  }
+
+  function buildTipHTML(dayObj){
+    const s = (dayObj && dayObj.sessions) ? dayObj.sessions : {};
+    const r = [
+      { label:"ครั้งที่ 1", ok: !!(s.s1 && s.s1.done), time: fmtTimeHHmm(s.s1 && s.s1.time) },
+      { label:"ครั้งที่ 2", ok: !!(s.s2 && s.s2.done), time: fmtTimeHHmm(s.s2 && s.s2.time) },
+      { label:"ครั้งที่ 3", ok: !!(s.s3 && s.s3.done), time: fmtTimeHHmm(s.s3 && s.s3.time) },
+    ];
+
+    return r.map(x=>{
+      const timeText = (x.ok && x.time) ? `${x.time} น.` : "—";
+      return `
+        <div class="tipRow">
+          <div class="tipLeft">
+            <div class="ico ${x.ok ? "ok" : "no"}">${icon(x.ok)}</div>
+            <div class="tipLabel">${x.label}</div>
+          </div>
+          <div class="tipSep">:</div>
+          <div class="tipTime ${timeText==="—" ? "dim" : ""}">${timeText}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function showTip(anchorEl, headerText, dayObj){
+    tipHdr.textContent = headerText;
+    tipBody.innerHTML = buildTipHTML(dayObj);
+
+    hoverTip.classList.add("show");
+    hoverTip.setAttribute("aria-hidden","false");
+    tipVisible = true;
+    tipAnchor = anchorEl;
+    positionTip(anchorEl);
+  }
+
+  function hideTip(){
+    hoverTip.classList.remove("show");
+    hoverTip.setAttribute("aria-hidden","true");
+    tipVisible = false;
+    tipAnchor = null;
+  }
+
+  function toggleTip(anchorEl, headerText, dayObj){
+    if (tipVisible && tipAnchor === anchorEl){
+      hideTip();
+    } else {
+      showTip(anchorEl, headerText, dayObj);
+    }
+  }
+
+  // tap outside / scroll should close tooltip (mobile friendly)
+  document.addEventListener("pointerdown", (ev)=>{
+    if (!tipVisible) return;
+    const inTip = hoverTip.contains(ev.target);
+    const inBox = ev.target && ev.target.closest ? ev.target.closest(".daybox") : null;
+    if (!inTip && !inBox) hideTip();
+  }, { passive:true });
+
+  hoverTip.addEventListener("pointerdown", (ev)=>{
+    // tap tooltip itself to close
+    ev.stopPropagation();
+    hideTip();
+  });
+
+  window.addEventListener("scroll", ()=>{ if (tipVisible) hideTip(); }, { passive:true });
+
+  function positionTip(anchorEl){
+    if (!tipVisible) return;
+
+    const r = anchorEl.getBoundingClientRect();
+    const tipW = hoverTip.offsetWidth || 240;
+    const tipH = hoverTip.offsetHeight || 170;
+
+    let left = r.left + (r.width/2) - (tipW/2);
+    let top  = r.bottom + 10;
+
+    left = Math.max(12, Math.min(left, window.innerWidth - tipW - 12));
+
+    const arrow = hoverTip.querySelector(".arrow");
+    if (top + tipH > window.innerHeight - 12) {
+      top = r.top - tipH - 10;
+      top = Math.max(12, Math.min(top, window.innerHeight - tipH - 12));
+      arrow.style.top = "auto";
+      arrow.style.bottom = "-7px";
+      arrow.style.transform = "rotate(225deg)";
+    } else {
+      arrow.style.bottom = "auto";
+      arrow.style.top = "-7px";
+      arrow.style.transform = "rotate(45deg)";
+    }
+
+    hoverTip.style.left = `${Math.round(left)}px`;
+    hoverTip.style.top  = `${Math.round(top)}px`;
+
+    const centerX = r.left + (r.width/2);
+    const arrowLeft = Math.max(22, Math.min(centerX - left, tipW - 22));
+    arrow.style.left = `${Math.round(arrowLeft)}px`;
+  }
+
+  window.addEventListener("resize", ()=>{ if (tipVisible) hideTip(); });
+  window.addEventListener("scroll", ()=>{ if (tipVisible) hideTip(); }, { passive:true });
+
+  function dayNumFromISO(iso){
+    const p = String(iso||"").split("-");
+    return p.length === 3 ? Number(p[2]) : "";
+  }
+
+  function dayGrade(count){
+    if (count === 3) return "s3";
+    if (count === 2) return "s2";
+    if (count === 1) return "s1";
+    return "s0";
+  }
+  function gradeByPercent(p){
+    if (p >= 90) return "good";
+    if (p >= 70) return "mid";
+    return "bad";
+  }
+
+  function updatePieSVG(pGood, pBad, pNone){
+    // pGood+pBad+pNone ~ 100
+    const r = 46;
+    const C = 2 * Math.PI * r;
+
+    const lenGood = Math.max(0, Math.min(100, pGood)) / 100 * C;
+    const lenBad  = Math.max(0, Math.min(100, pBad))  / 100 * C;
+    const lenNone = Math.max(0, Math.min(100, pNone)) / 100 * C;
+
+    const offGood = 0;
+    const offBad  = lenGood;
+    const offNone = lenGood + lenBad;
+
+    const setSeg = (el, len, off)=>{
+      if (!el) return;
+      el.style.strokeDasharray = `${len} ${C}`;
+      el.style.strokeDashoffset = `${-off}`;
+    };
+
+    setSeg(pieSegGood, lenGood, offGood);
+    setSeg(pieSegBad,  lenBad,  offBad);
+    setSeg(pieSegNone, lenNone, offNone);
+  }
+
+function render(out){
+    const w = out.week;
+    elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
+
+    // ===== Daily summary (client local day) =====
+    const rowsAll = out.people || [];
+    const peopleTotal = rowsAll.length;
+
+    const todayISO = (()=>{
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const da = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${da}`;
+    })();
+
+    // if today not in selected week, fallback to week.startISO (makes UI still meaningful when browsing other week)
+    const inRange = (iso)=> (iso >= w.startISO && iso <= w.endISO);
+    const dayISO = inRange(todayISO) ? todayISO : w.startISO;
+
+    const dayLabelTH = thaiDateFromISO(dayISO);
+    dailyPieLabel.textContent = `สัดส่วนวันนี้ (${dayLabelTH})`;
+
+    const completeNames = [];
+    const partialNames  = [];
+    const noneNames     = [];
+
+    for (const p of rowsAll){
+      const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+      const d = perDay.find(x => String(x.dateISO||'') === dayISO);
+      const cnt = d ? Number(d.count||0) : 0;
+      if (cnt >= 3) completeNames.push(p.name);
+      else if (cnt > 0) partialNames.push(p.name);
+      else noneNames.push(p.name);
+    }
+
+    // Sort names (Thai)
+    const thSort = (a,b)=> String(a).localeCompare(String(b),'th');
+    completeNames.sort(thSort);
+    partialNames.sort(thSort);
+    noneNames.sort(thSort);
+
+    const completeN = completeNames.length;
+    const partialN  = partialNames.length;
+    const noneN     = noneNames.length;
+
+    const pct = (n)=> peopleTotal ? (n/peopleTotal*100) : 0;
+    const pGood = pct(completeN);
+    const pBad  = pct(partialN);
+    const pNone = Math.max(0, 100 - pGood - pBad);
+
+        updatePieSVG(pGood, pBad, pNone);
+
+    // ✅ Center label (premium)
+    pieCenterBig.textContent = `${pGood.toFixed(0)}%`;
+    pieCenterSub.textContent = `ครบ 3 ครั้ง`;
+    pieCenterTiny.textContent = `${completeN}/${peopleTotal} คน`;
+
+    lgGood.textContent = `ครบ 3 ครั้ง: ${completeN} คน (${pGood.toFixed(0)}%)`;
+    lgBad.textContent  = `ทำไม่ครบ: ${partialN} คน (${pBad.toFixed(0)}%)`;
+    lgNone.textContent = `ไม่ทำเลย: ${noneN} คน (${pNone.toFixed(0)}%)`;
+
+        pieText.textContent = `ทั้งหมด ${peopleTotal} คน · ครบ ${completeN} · ไม่ครบ ${partialN} · ไม่ทำเลย ${noneN}`;
+    const renderNameChips = (el, names, cls)=> {
+      if (!el) return;
+      if (!names.length){
+        el.innerHTML = `<span class="muted">— ไม่มี —</span>`;
+        return;
+      }
+      el.innerHTML = names.map(n=>`<span class="nameItem ${cls}">${escapeHtml(n)}</span>`).join('');
+    };
+
+    // Middle box: weekly breakdown of "complete 3/3" per day
+    const daysISO = [];
+    {
+      const [sy,sm,sd] = w.startISO.split("-").map(Number);
+      const base = new Date(sy, sm-1, sd);
+      for (let i=0;i<7;i++){
+        const d = new Date(base);
+        d.setDate(base.getDate()+i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const da = String(d.getDate()).padStart(2,'0');
+        daysISO.push(`${y}-${m}-${da}`);
+      }
+    }
+
+    const dailyCompleteCounts = daysISO.map(iso=>{
+      let c = 0;
+      for (const p of rowsAll){
+        const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+        const dd = perDay.find(x => String(x.dateISO||'') === iso);
+        const cnt = dd ? Number(dd.count||0) : 0;
+        if (cnt >= 3) c++;
+      }
+      return c;
+    });
+
+    const avgPct = peopleTotal ? (dailyCompleteCounts.reduce((a,b)=>a+b,0) / (peopleTotal*7) * 100) : 0;
+    if (weeklyCompleteMeta) weeklyCompleteMeta.textContent = `เฉลี่ย ${avgPct.toFixed(0)}%/วัน`;
+
+    if (weeklyCompleteList){
+      weeklyCompleteList.innerHTML = daysISO.map((iso, i)=>{
+        const c = dailyCompleteCounts[i];
+        const pDay = peopleTotal ? (c/peopleTotal*100) : 0;
+        const dayShort = thaiDayShortFromISO(iso);
+        const dateShort = thaiDateFromISO(iso);
+        return `
+          <div class="wkRow">
+            <div class="wkDay">${dayShort} ${dateShort}</div>
+            <div class="wkBar"><i style="width:${Math.max(0, Math.min(100, pDay)).toFixed(2)}%"></i></div>
+            <div class="wkStat"><span class="wkNum">${c} คน</span><span class="wkPct">${pDay.toFixed(0)}%</span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    if (weeklyCompleteSub){
+      weeklyCompleteSub.textContent = `รวมครบทั้งสัปดาห์: ${dailyCompleteCounts.reduce((a,b)=>a+b,0)} ครั้ง (นับคน·วัน)`;
+    }
+    // Right lists (this week = per-day; last week = whole-week)
+    const isLastWeek = (weekOffset === -1);
+
+    if (isLastWeek){
+      const noneWeek = [];
+      const partialWeek = [];
+
+      const getTotalDone = (person)=>{
+        const v = Number(person && person.totalDone);
+        if (Number.isFinite(v)) return v;
+        const perDay = Array.isArray(person && person.perDay) ? person.perDay : [];
+        let sum = 0;
+        for (const d of perDay){
+          const c = Number(d && d.count);
+          if (Number.isFinite(c)) sum += c;
+        }
+        return sum;
+      };
+
+      const getTotalSlots = (person)=>{
+        const v = Number(person && person.totalSlots);
+        if (Number.isFinite(v) && v > 0) return v;
+        return 21; // 7 days * 3 sessions
+      };
+
+      for (const p of rowsAll){
+        const totalDoneW = getTotalDone(p);
+        const totalSlotsW = getTotalSlots(p);
+        if (totalDoneW <= 0) noneWeek.push(p.name);
+        else if (totalDoneW < totalSlotsW) partialWeek.push(p.name);
+      }
+
+      noneWeek.sort(thSort);
+      partialWeek.sort(thSort);
+
+      if (dailyNotCompleteLabel) dailyNotCompleteLabel.textContent = `สรุปทั้งสัปดาห์ที่แล้ว (จันทร์–อาทิตย์)`;
+      if (partialTitle) partialTitle.textContent = `ทำไม่ครบทั้งสัปดาห์ (มีทำบ้าง แต่ไม่ครบ 21/21)`;
+      if (noneTitle) noneTitle.textContent = `ไม่ทำเลยทั้งสัปดาห์ (0/21)`;
+
+      if (dailyNotCompleteCount) dailyNotCompleteCount.textContent = `${partialWeek.length + noneWeek.length} คน`;
+      renderNameChips(dailyPartialList, partialWeek, 'bad');
+      renderNameChips(dailyNoneList, noneWeek, '');
+    } else {
+      if (dailyNotCompleteLabel) dailyNotCompleteLabel.textContent = `ทำไม่ครบวันนี้ · ${dayLabelTH}`;
+      if (partialTitle) partialTitle.textContent = `ทำไม่ครบ (1–2 ครั้ง)`;
+      if (noneTitle) noneTitle.textContent = `ไม่ทำเลย (0 ครั้ง)`;
+
+      if (dailyNotCompleteCount) dailyNotCompleteCount.textContent = `${partialN + noneN} คน`;
+      renderNameChips(dailyPartialList, partialNames, 'bad');
+      renderNameChips(dailyNoneList, noneNames, '');
+    }
+    // Compare today vs previous day (within selected week)
+    const prevISO = (()=> {
+      const [yy,mm,dd] = dayISO.split("-").map(Number);
+      const d = new Date(yy, mm-1, dd);
+      d.setDate(d.getDate()-1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const da = String(d.getDate()).padStart(2,'0');
+      const iso = `${y}-${m}-${da}`;
+      return inRange(iso) ? iso : dayISO;
+    })();
+
+    const prevCompleteN = (()=> {
+      let c=0;
+      for (const p of rowsAll){
+        const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+        const dd = perDay.find(x => String(x.dateISO||'') === prevISO);
+        const cnt = dd ? Number(dd.count||0) : 0;
+        if (cnt >= 3) c++;
+      }
+      return c;
+    })();
+
+    const pToday = peopleTotal ? (completeN/peopleTotal*100) : 0;
+    const pPrev  = peopleTotal ? (prevCompleteN/peopleTotal*100) : 0;
+
+    if (cmpTodayLabel) cmpTodayLabel.textContent = `วันนี้ (${thaiDateFromISO(dayISO)})`;
+    if (cmpPrevLabel)  cmpPrevLabel.textContent  = (prevISO===dayISO) ? `เมื่อวาน (—)` : `เมื่อวาน (${thaiDateFromISO(prevISO)})`;
+    if (cmpTodayPct)   cmpTodayPct.textContent   = `${completeN} คน (${pToday.toFixed(0)}%)`;
+    if (cmpPrevPct)    cmpPrevPct.textContent    = `${prevCompleteN} คน (${pPrev.toFixed(0)}%)`;
+    if (cmpBarToday)   cmpBarToday.style.width   = `${Math.max(0, Math.min(100, pToday)).toFixed(2)}%`;
+    if (cmpBarPrev)    cmpBarPrev.style.width    = `${Math.max(0, Math.min(100, pPrev)).toFixed(2)}%`;
+
+    const delta = pToday - pPrev;
+    if (cmpDelta){
+      if (prevISO===dayISO){
+        cmpDelta.textContent = `เทียบวันก่อนหน้า: — (อยู่นอกช่วงวันที่เลือก)`;
+      } else if (Math.abs(delta) < 0.5){
+        cmpDelta.textContent = `เทียบเมื่อวาน: แทบไม่เปลี่ยน (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
+      } else if (delta > 0){
+        cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="up">ดีขึ้น</span> (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
+      } else {
+        cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="down">ลดลง</span> (${delta.toFixed(0)}%)`;
+      }
+    }
+
+    const rows = out.people || [];
+    rows.sort((a,b)=> (b.percent||0) - (a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
+
+    tbody.innerHTML = "";
+
+    for (const p of rows){
+      const pctW = Number(p.percent || 0);
+      const g = gradeByPercent(pctW);
+      const chipText = (pctW === 100) ? "ครบ 100%" : `${pctW}%`;
+      const doneDays = Number(p.doneDays || 0);
+      const totalDone = Number(p.totalDone || 0);
+      const totalSlots = Number(p.totalSlots || 21);
+
+      const dayBoxes = (p.perDay || []).map((d)=>{
+        const cnt = Number(d.count || 0);
+        const dg = dayGrade(cnt);
+        const iso = String(d.dateISO || "");
+        const dayShort = thaiDayShortFromISO(iso);
+        const dayNum = dayNumFromISO(iso);
+
+        const tipHeader = thaiTooltipHeaderFromISO(iso);
+        const tipPayload = encodeURIComponent(JSON.stringify({
+          dateISO: iso,
+          sessions: d.sessions || null
+        }));
+
+        return `
+          <div class="daybox ${dg}" data-tipheader="${escapeHtml(tipHeader)}" data-tip="${tipPayload}">
+            <div class="dayTop">
+              <span class="dayPill">${dayShort}</span>
+              <span class="dayNum">${dayNum}</span>
+            </div>
+            <div class="dayCount"><span class="dcA">${cnt}</span><span class="dcSep">/</span><span class="dcB">3</span></div>
+          </div>
+        `;
+      }).join("");
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="name" data-label="ชื่อ">${escapeHtml(p.name||"")}</td>
+        <td data-label="% สัปดาห์">
+          <div class="pctRow">
+            <span class="chip ${g}">
+              <span class="dot"></span>
+              <span>${chipText}</span>
+            </span>
+            <div class="progress ${g}">
+              <i style="width:${Math.max(0, Math.min(100, pctW))}%"></i>
+            </div>
+          </div>
+          <div class="subline">ทำได้ ${totalDone}/${totalSlots} ครั้ง</div>
+        </td>
+        <td style="font-weight:900;font-size:16px" data-label="ครบทั้งวัน">${doneDays}/7</td>
+        <td data-label="สรุป 7 วัน"><div class="days">${dayBoxes}</div></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    // bind tooltip events (after DOM updated)
+    document.querySelectorAll(".daybox").forEach(el=>{
+      const getPayload = ()=>{
+        const hdr = el.getAttribute("data-tipheader") || "-";
+        const raw = el.getAttribute("data-tip") || "";
+        let dayObj = {};
+        try { dayObj = JSON.parse(decodeURIComponent(raw)); } catch(e){}
+        return { hdr, dayObj };
+      };
+
+      if (isTouch){
+        el.addEventListener("click", (ev)=>{
+          ev.preventDefault();
+          ev.stopPropagation();
+          const { hdr, dayObj } = getPayload();
+          toggleTip(el, hdr, dayObj);
+        });
+      } else {
+        el.addEventListener("mouseenter", ()=>{
+          const { hdr, dayObj } = getPayload();
+          showTip(el, hdr, dayObj);
+        });
+        el.addEventListener("mousemove", ()=> positionTip(el));
+        el.addEventListener("mouseleave", hideTip);
+      }
+    });
+
+    if (!rows.length){
+      tbody.innerHTML = `<tr><td colspan="4" class="muted">ไม่พบข้อมูล</td></tr>`;
+    }
+  }
+
+  // ====== Backoff config ======
+  const BACKOFF_BASE_MS = 60_000;    // 1 นาที (ปกติ)
+  const BACKOFF_MAX_MS  = 8 * 60_000; // 8 นาที (สูงสุด)
+  let errorStreak = 0;               // นับ error ติดต่อกัน
+
+  function nextBackoffMs() {
+    // 0 error=60s, 1=120s, 2=240s, 3+=480s
+    return Math.min(BACKOFF_BASE_MS * Math.pow(2, errorStreak), BACKOFF_MAX_MS);
+  }
+
+  let inFlight = false;
+  async function load(isAuto=false){
+    if (inFlight) return;
+    inFlight = true;
+
+    if (!isAuto){
+      tbody.innerHTML = `<tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>`;
+    }
+
+    try{
+      const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(weekOffset))}`, { cache:"no-store" });
+      const out = await res.json().catch(()=>({}));
+
+      if (!res.ok || !out.ok){
+        tbody.innerHTML = `<tr><td colspan="4" class="muted">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
+        // error → backoff นานขึ้น
+        errorStreak = Math.min(errorStreak + 1, 3);
+        return;
+      }
+      // สำเร็จ → reset streak
+      errorStreak = 0;
+      render(out);
+      setLastUpdated();
+    } catch(e){
+      // network error → backoff ด้วย
+      errorStreak = Math.min(errorStreak + 1, 3);
+      if (!isAuto){
+        tbody.innerHTML = `<tr><td colspan="4" class="muted">โหลดไม่สำเร็จ: ${escapeHtml(String(e))}</td></tr>`;
+      }
+    } finally{
+      inFlight = false;
+    }
+  }
+
+  function setActiveWeek(offset){
+    weekOffset = offset;
+
+    btnThis.classList.toggle("active", weekOffset === 0);
+    btnLast.classList.toggle("active", weekOffset === -1);
+    btnThis.setAttribute("aria-selected", String(weekOffset === 0));
+    btnLast.setAttribute("aria-selected", String(weekOffset === -1));
+
+    hideTip();
+    load(false);
+
+    // switch สัปดาห์ → reset streak + reschedule ทันที
+    errorStreak = 0;
+    scheduleNext();
+  }
+
+  btnThis.addEventListener("click", ()=> setActiveWeek(0));
+  btnLast.addEventListener("click", ()=> setActiveWeek(-1));
+
+  let refreshTimer = null;
+
+  function scheduleNext(){
+    stopAuto();
+    const delay = nextBackoffMs();
+    refreshTimer = setTimeout(async ()=>{
+      if (!document.hidden){
+        await load(true);
+        hideTip();
+      }
+      scheduleNext(); // วนซ้ำ — delay คำนวณใหม่จาก errorStreak ล่าสุด
+    }, delay);
+  }
+
+  function stopAuto(){
+    if (refreshTimer){ clearTimeout(refreshTimer); refreshTimer=null; }
+  }
+
+  document.addEventListener("visibilitychange", ()=>{
+    if (!document.hidden){
+      // กลับมาเปิด tab → โหลดทันที + reset schedule
+      load(true);
+      hideTip();
+      scheduleNext();
+    } else {
+      // ซ่อน tab → หยุด timer ประหยัด quota
+      stopAuto();
+    }
+  });
+
+  (function init(){
+    setActiveWeek(0);
+    scheduleNext();
+  })();
+</script>
+</body>
+</html>

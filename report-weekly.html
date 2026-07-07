@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Executive Weekly Report - Meditation</title>
+  <style>
+    :root{
+      --bg:#0a1322;
+      --card-bg:#111826;
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.65);
+      --l1-color:#30d16a;
+      --l2-color:#f3c43a;
+      --l3-color:#ff8c2a;
+      --l4-color:#ff4d4d;
+      --l5-color:#ff4d4d;
+      --radius:16px;
+      --shadow:0 4px 20px rgba(0,0,0,.5);
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
+      color:var(--text);
+      background:#081224;
+      min-height:100vh;
+      padding:20px;
+    }
+    .page{width:min(1280px,100%);margin:0 auto;}
+
+    /* --- Header --- */
+    .hdr{
+      display:flex;align-items:flex-start;justify-content:space-between;
+      margin-bottom:20px;flex-wrap:wrap;gap:12px;
+    }
+    .title h1{margin:0;font-size:22px;font-weight:900;letter-spacing:.4px;line-height:1.3;}
+    .sub{display:flex;gap:8px;font-size:12px;color:var(--muted);margin-top:6px;flex-wrap:wrap;}
+    .pill-info{
+      background:rgba(255,255,255,.10);
+      padding:4px 10px;border-radius:99px;
+      display:inline-flex;align-items:center;gap:6px;
+    }
+    .dot-live{
+      width:8px;height:8px;background:var(--l1-color);
+      border-radius:50%;box-shadow:0 0 8px var(--l1-color);
+      animation:pulse 2s infinite;
+    }
+    @keyframes pulse{0%{opacity:1}50%{opacity:.5}100%{opacity:1}}
+
+    /* --- Actions --- */
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .btn{
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.20);
+      color:#fff;padding:8px 16px;border-radius:8px;
+      cursor:pointer;text-decoration:none;font-weight:bold;font-size:13px;
+      white-space:nowrap;
+    }
+    .btn:hover{background:rgba(255,255,255,.15);}
+
+    /* --- Top Grid --- */
+    .top-grid{
+      display:grid;
+      grid-template-columns:1.5fr 1fr;
+      gap:16px;
+      margin-bottom:16px;
+    }
+    .card{
+      background:var(--card-bg);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:var(--shadow);
+      display:flex;flex-direction:column;
+    }
+
+    /* Trend Chart */
+    .chart-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:8px;flex-wrap:wrap;}
+    .chart-title{font-size:15px;font-weight:bold;}
+    .chart-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+    .trend-bars{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:6px;
+      height:100px;
+      align-items:end;
+    }
+    .t-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .t-bar-bg{
+      width:100%;height:72px;
+      background:rgba(255,255,255,.05);
+      border-radius:6px;overflow:hidden;
+      display:flex;align-items:flex-end;
+    }
+    .t-bar-fill{
+      width:100%;
+      background:linear-gradient(180deg,#22c55e 0%,#15803d 100%);
+      border-top:1px solid #4ade80;
+    }
+    .t-lbl{font-size:11px;font-weight:bold;color:var(--muted);}
+    .t-val{font-size:10px;color:var(--muted);}
+
+    /* Donut Chart */
+    .donut-layout{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
+    .donut-chart{width:100px;height:100px;position:relative;flex:0 0 auto;}
+    .legend-box{display:grid;gap:6px;}
+    .l-row{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:var(--muted);}
+    .l-label{display:flex;align-items:center;gap:6px;}
+    .dot{width:8px;height:8px;border-radius:50%;}
+
+    /* --- Buckets Grid --- */
+    .buckets-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+      align-items:start;
+    }
+    .bucket-card{
+      background:var(--card-bg);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      padding:16px;
+      display:flex;flex-direction:column;
+    }
+    .b-header{margin-bottom:10px;}
+    .b-title{font-size:13px;font-weight:900;color:#fff;margin-bottom:4px;}
+    .b-range{font-size:11px;font-weight:bold;color:rgba(255,255,255,.7);}
+    .b-desc{
+      font-size:10px;line-height:1.5;color:rgba(255,255,255,.5);
+      margin-bottom:14px;
+    }
+    .b-stats{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:10px;font-size:12px;font-weight:bold;
+    }
+    .b-count{color:#fff;font-size:13px;}
+    .b-pct{color:rgba(255,255,255,.6);font-family:var(--mono);}
+    .b-list{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:6px;
+      align-content:start;
+    }
+    .n-pill{
+      font-size:10px;font-weight:700;
+      padding:6px 4px;
+      border-radius:99px;
+      border:1px solid rgba(255,255,255,.2);
+      background:transparent;
+      color:rgba(255,255,255,.9);
+      text-align:center;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .n-pill.l1{border-color:var(--l1-color);color:var(--l1-color);box-shadow:inset 0 0 10px rgba(48,209,106,.1);}
+    .n-pill.l2{border-color:var(--l2-color);color:var(--l2-color);box-shadow:inset 0 0 10px rgba(243,196,58,.1);}
+    .n-pill.l3{border-color:var(--l3-color);color:var(--l3-color);box-shadow:inset 0 0 10px rgba(255,140,42,.1);}
+    .n-pill.l4{border-color:var(--l4-color);color:var(--l4-color);box-shadow:inset 0 0 10px rgba(255,77,77,.1);}
+    .n-pill.l5{border-color:var(--l5-color);color:var(--l5-color);background:rgba(255,77,77,.1);}
+
+    /* ============================================================
+       RESPONSIVE BREAKPOINTS
+    ============================================================ */
+
+    /* iPad Pro landscape / wide tablet (1024px) */
+    @media screen and (max-width:1100px){
+      .buckets-grid{grid-template-columns:repeat(3,1fr);}
+    }
+
+    /* iPad portrait / tablet landscape (980px) */
+    @media screen and (max-width:980px){
+      body{padding:16px;}
+      .hdr{flex-direction:column;align-items:flex-start;}
+      .actions{width:100%;}
+      .top-grid{grid-template-columns:1fr;}
+      .buckets-grid{grid-template-columns:repeat(2,1fr);}
+      .b-desc{display:none;} /* ซ่อน desc บน tablet ประหยัดพื้นที่ */
+    }
+
+    /* Tablet portrait / large mobile (640px) */
+    @media screen and (max-width:640px){
+      body{padding:12px;}
+      .title h1{font-size:18px;}
+      .top-grid{gap:12px;}
+      .trend-bars{gap:4px;height:90px;}
+      .t-bar-bg{height:64px;}
+      .t-lbl{font-size:10px;}
+      .t-val{font-size:9px;}
+      .donut-chart{width:88px;height:88px;}
+      .buckets-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+      .bucket-card{padding:12px;}
+      .b-title{font-size:12px;}
+    }
+
+    /* Mobile (480px) */
+    @media screen and (max-width:480px){
+      body{padding:10px;}
+      .title h1{font-size:16px;}
+      .sub{gap:6px;}
+      .pill-info{font-size:11px;padding:4px 8px;}
+
+      /* Trend: font เล็กลง, bar สูงลดลง */
+      .trend-bars{gap:3px;height:80px;}
+      .t-bar-bg{height:56px;}
+      .t-lbl{font-size:9px;}
+      .t-val{display:none;} /* ซ่อน % ใต้ bar บน Mobile เล็ก */
+
+      /* Donut layout: วางซ้อน */
+      .donut-layout{flex-direction:column;gap:12px;}
+      .donut-chart{width:80px;height:80px;}
+      .legend-box{width:100%;}
+      .l-row{font-size:12px;}
+
+      /* Buckets: 1 คอลัมน์ */
+      .buckets-grid{grid-template-columns:1fr;}
+      .b-list{grid-template-columns:repeat(3,1fr);} /* ชื่อ 3 cols บน mobile */
+      .n-pill{font-size:11px;padding:7px 4px;}
+    }
+
+    /* Mobile XS (360px) */
+    @media screen and (max-width:360px){
+      .trend-bars{gap:2px;}
+      .t-lbl{font-size:8px;}
+      .b-list{grid-template-columns:repeat(2,1fr);}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="hdr">
+      <div class="title">
+        <h1>Dashboard Meditation — Executive Weekly Report</h1>
+        <div class="sub">
+          <span class="pill-info" id="weekPill">สัปดาห์: กำลังโหลด...</span>
+          <span class="pill-info"><span class="dot-live"></span><span id="updatedPill">อัปเดต: --:--</span></span>
+        </div>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/dashboard.html">กลับไป Dashboard</a>
+      </div>
+    </div>
+
+    <div class="top-grid">
+      <div class="card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Weekly Trend</div>
+            <div class="chart-sub">% คนที่ "ครบ 3/3" ต่อวัน (จ.-อา.)</div>
+          </div>
+          <div class="pill-info" style="font-size:11px" id="trendAvg">เฉลี่ย: --%</div>
+        </div>
+        <div class="trend-bars" id="trendBars"></div>
+      </div>
+
+      <div class="card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Distribution (ระดับ % ต่อสัปดาห์)</div>
+            <div class="chart-sub">ภาพรวม Compliance</div>
+          </div>
+        </div>
+        <div class="donut-layout">
+          <div class="donut-chart">
+            <svg viewBox="0 0 36 36">
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#333" stroke-width="3"/>
+              <g id="donutSegs"></g>
+            </svg>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+              <div style="font-size:14px;font-weight:900;color:#fff" id="donutCenter">--%</div>
+              <div style="font-size:7px;color:#aaa">Compliance</div>
+            </div>
+          </div>
+          <div class="legend-box" id="legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buckets-grid">
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 1 — Perfect Integrity</div>
+          <div class="b-range">(100%) ทำสมาธิได้สมบูรณ์แบบ</div>
+        </div>
+        <div class="b-desc">สมาชิกในกลุ่มนี้มี Integrity ที่ยอดเยี่ยม แสดงถึงความสามารถในการนั่งสมาธิที่เข้าถึงอย่างสมบูรณ์</div>
+        <div class="b-stats">
+          <div class="b-count" id="b1Count">-- คน</div>
+          <div class="b-pct" id="b1Pct">--%</div>
+        </div>
+        <div class="b-list" id="b1List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 2 — Excellent</div>
+          <div class="b-range">(90–99%) ดีมาก ใกล้เคียง 100%</div>
+        </div>
+        <div class="b-desc">มี Integrity ในการทำสมาธิ ถึงจะไม่ได้ 100% แต่ก็ใกล้เคียงมาก แสดงถึงความตั้งมั่นที่ดี</div>
+        <div class="b-stats">
+          <div class="b-count" id="b2Count">-- คน</div>
+          <div class="b-pct" id="b2Pct">--%</div>
+        </div>
+        <div class="b-list" id="b2List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 3 — Good</div>
+          <div class="b-range">(80–89%) ดี มีโอกาสพัฒนา</div>
+        </div>
+        <div class="b-desc">มี Integrity ในระดับกลาง ยังมีโอกาสในการพัฒนาเพิ่มเติมอย่างต่อเนื่อง</div>
+        <div class="b-stats">
+          <div class="b-count" id="b3Count">-- คน</div>
+          <div class="b-pct" id="b3Pct">--%</div>
+        </div>
+        <div class="b-list" id="b3List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 4 — Fair</div>
+          <div class="b-range">(70–79%) ปานกลาง ควรฝึกเพิ่ม</div>
+        </div>
+        <div class="b-desc">ยังไม่สามารถเข้าถึงสมาธิได้อย่างที่คาดหวัง จะต้องฝึกฝนเพิ่มเติม</div>
+        <div class="b-stats">
+          <div class="b-count" id="b4Count">-- คน</div>
+          <div class="b-pct" id="b4Pct">--%</div>
+        </div>
+        <div class="b-list" id="b4List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 5 — Needs Support</div>
+          <div class="b-range">(&lt;69%) ต่ำ ต้องการการสนับสนุน</div>
+        </div>
+        <div class="b-desc">การฝึกสมาธิยังไม่ค่อยประสบความสำเร็จ อาจมีปัญหาในการตั้งมั่นหรือการเข้าถึงสมาธิ</div>
+        <div class="b-stats">
+          <div class="b-count" id="b5Count">-- คน</div>
+          <div class="b-pct" id="b5Pct">--%</div>
+        </div>
+        <div class="b-list" id="b5List"></div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  const WEEK_OFFSET = -1;
+  const REFRESH_MS  = 60_000; // auto-refresh ทุก 1 นาที
+
+  const $ = (id)=> document.getElementById(id);
+  const escHtml = (s)=> String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+
+  function thaiDateFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if(!y||!m||!d) return "-";
+    return new Date(y,m-1,d).toLocaleDateString("th-TH",{day:"numeric",month:"short"});
+  }
+  function pct(n,total){ return total ? (n/total*100) : 0; }
+
+  function setUpdated(){
+    const d = new Date();
+    const hhmm = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    $("updatedPill").textContent = `อัปเดต: ${hhmm} น.`;
+  }
+
+  function buildTrend(peopleRows,week){
+    const days=[];
+    const [sy,sm,sd]=week.startISO.split("-").map(Number);
+    const start=new Date(sy,sm-1,sd); start.setHours(0,0,0,0);
+    for(let i=0;i<7;i++){
+      const d=new Date(start); d.setDate(start.getDate()+i);
+      days.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`);
+    }
+    const total=peopleRows.length;
+    return days.map(iso=>{
+      let c=0;
+      for(const p of peopleRows){
+        const dd=(p.perDay||[]).find(x=>String(x.dateISO||"")===iso);
+        if(dd&&Number(dd.count||0)===3) c++;
+      }
+      return {iso,complete:c,pct:pct(c,total)};
+    });
+  }
+
+  function renderTrend(tr){
+    const host=$("trendBars");
+    host.innerHTML=tr.map(x=>{
+      const dayShort=new Date(x.iso).toLocaleDateString("th-TH",{weekday:"short"});
+      const h=Math.max(0,Math.min(100,x.pct));
+      return `<div class="t-col">
+        <div class="t-bar-bg"><div class="t-bar-fill" style="height:${h}%"></div></div>
+        <div class="t-lbl">${dayShort}.</div>
+        <div class="t-val">${x.pct.toFixed(0)}%</div>
+      </div>`;
+    }).join("");
+    const avg=tr.reduce((s,x)=>s+x.pct,0)/(tr.length||1);
+    $("trendAvg").textContent=`เฉลี่ย: ${avg.toFixed(0)}%`;
+  }
+
+  function renderDonut(buckets,compliancePct,totalMembers){
+    const colors=["#30d16a","#f3c43a","#ff8c2a","#ff4d4d","#b91c1c"];
+    const counts=[buckets.b1.length,buckets.b2.length,buckets.b3.length,buckets.b4.length,buckets.b5.length];
+    let accumulated=0;
+    const segments=counts.map((cnt,i)=>{
+      const p=pct(cnt,totalMembers);
+      const dash=`${p} ${100-p}`;
+      const offset=25-accumulated;
+      accumulated+=p;
+      return `<circle cx="18" cy="18" r="15.9155" fill="none" stroke="${colors[i]}" stroke-width="3" stroke-dasharray="${dash}" stroke-dashoffset="${offset}"></circle>`;
+    }).join("");
+    $("donutSegs").innerHTML=segments;
+    $("donutCenter").textContent=`${compliancePct.toFixed(0)}%`;
+    const labels=["100%","90-99%","80-89%","70-79%","<69%"];
+    $("legend").innerHTML=counts.map((c,i)=>`
+      <div class="l-row">
+        <div class="l-label"><div class="dot" style="background:${colors[i]}"></div>${labels[i]}</div>
+        <div>${c} คน</div>
+      </div>`).join("");
+  }
+
+  function renderBucket(idPrefix,names,totalMembers,cls){
+    $(idPrefix+"Count").textContent=`${names.length} คน`;
+    $(idPrefix+"Pct").textContent=`${pct(names.length,totalMembers).toFixed(0)}%`;
+    if(!names.length){
+      $(idPrefix+"List").innerHTML=`<span style="grid-column:span 2;text-align:center;color:#555;font-size:10px">- ไม่มีรายการ -</span>`;
+      return;
+    }
+    $(idPrefix+"List").innerHTML=names.map(n=>`<div class="n-pill ${cls}">${escHtml(n)}</div>`).join("");
+  }
+
+  async function load(){
+    try{
+      const res=await fetch(`/api/dashboard?weekOffset=${WEEK_OFFSET}`,{cache:"no-store"});
+      const out=await res.json();
+      if(!out.ok) return;
+
+      const p=out.people||[];
+      const total=p.length;
+      const buckets={b1:[],b2:[],b3:[],b4:[],b5:[]};
+      let sumDone=0,sumSlots=0;
+
+      p.forEach(x=>{
+        const wp=Number(x.percent||0);
+        sumDone+=Number(x.totalDone||0);
+        sumSlots+=Number(x.totalSlots||21);
+        if(wp>=100) buckets.b1.push(x.name);
+        else if(wp>=90) buckets.b2.push(x.name);
+        else if(wp>=80) buckets.b3.push(x.name);
+        else if(wp>=70) buckets.b4.push(x.name);
+        else buckets.b5.push(x.name);
+      });
+
+      const sortFn=(a,b)=>String(a).localeCompare(String(b),"th");
+      Object.values(buckets).forEach(arr=>arr.sort(sortFn));
+
+      const w=out.week;
+      $("weekPill").textContent=`สัปดาห์: ${thaiDateFromISO(w.startISO)} – ${thaiDateFromISO(w.endISO)}`;
+      setUpdated();
+
+      renderTrend(buildTrend(p,w));
+      renderDonut(buckets,(sumSlots?sumDone/sumSlots*100:0),total);
+      renderBucket("b1",buckets.b1,total,"l1");
+      renderBucket("b2",buckets.b2,total,"l2");
+      renderBucket("b3",buckets.b3,total,"l3");
+      renderBucket("b4",buckets.b4,total,"l4");
+      renderBucket("b5",buckets.b5,total,"l5");
+
+    }catch(e){console.error(e);}
+  }
+
+  // Auto-refresh
+  load();
+  let refreshTimer=setInterval(()=>{ if(!document.hidden) load(); },REFRESH_MS);
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden){ clearInterval(refreshTimer); load(); refreshTimer=setInterval(()=>{ if(!document.hidden) load(); },REFRESH_MS); }
+  });
+</script>
+</body>
+</html>
