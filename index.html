@@ -390,7 +390,8 @@
 
   // ===== BIRTHDAYS =====
   const BIRTHDAYS = {
-    "สุรเชษฐ์ (ตั้ม)": { m:8, d:7 },
+    "สุรเชษฐ์ (ตั้ม)":    { m:8, d:7 },
+    "สุรุ่งรัตน์ (เก่ง)": { m:8, d:7 },
     // เพิ่มวันเกิดสมาชิกคนอื่นที่นี่ เช่น "ชื่อ (ชื่อเล่น)": { m:เดือน, d:วัน }
   };
 
@@ -398,12 +399,7 @@
   function showBirthdayBanner(name) {
     birthdayBannerEl.textContent = `🎂  สุขสันต์วันเกิด ${name}! ขอให้มีความสุขมากๆ คิดสิ่งใดสมดั่งใจปรารถนาทุกประการ 🎉`;
     birthdayBannerEl.classList.add("visible");
-    // confetti ยิงแค่ครั้งแรกของวัน
-    const todayKey = "bday_confetti_" + new Date().toISOString().slice(0,10);
-    if (!localStorage.getItem(todayKey)) {
-      localStorage.setItem(todayKey, "1");
-      initFestiveEffect("birthday");
-    }
+    initFestiveEffect("birthday");
   }
 
   function hideBirthdayBanner() {
