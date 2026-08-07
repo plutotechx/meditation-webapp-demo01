@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Update Daily Meditation</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap');
     :root{
       --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.12);
       --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
@@ -19,25 +20,29 @@
       --tint-border-bad: rgba(255,106,106,.34);
     }
     *{box-sizing:border-box}
-    body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1040px;margin:0 auto;padding:24px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+    body{font-family:'Sarabun',system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:linear-gradient(160deg,#0c1829 0%,#101f38 40%,#0d1b31 70%,#0a1520 100%);background-attachment:fixed;color:var(--text);min-height:100vh;}
+    body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 70% 55% at 15% 12%,rgba(106,169,255,.07) 0%,transparent 55%),radial-gradient(ellipse 55% 45% at 85% 88%,rgba(101,255,179,.05) 0%,transparent 55%);pointer-events:none;z-index:0;}
+    .wrap{max-width:1040px;margin:0 auto;padding:24px;position:relative;z-index:1;}
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:24px;padding:18px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 8px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.09);}
     .headerCenter{text-align:center;display:grid;gap:6px;margin-bottom:16px;}
-    h1{margin:0;font-size:22px}
+    h1{margin:0;font-size:22px;background:linear-gradient(135deg,#eaf0ff 0%,#a8c5ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
     .muted{color:var(--muted);margin:0;line-height:1.55}
     #weekHeader{margin:0;color:rgba(234,240,255,.78);font-weight:800;}
-    label{display:block;margin:12px 0 6px}
-    select,input{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:var(--input);color:#fff;padding:12px 12px;outline:none}
+    label{display:block;margin:12px 0 6px;font-weight:600;color:rgba(234,240,255,.78);}
+    select,input{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:var(--input);color:#fff;padding:12px 12px;outline:none;transition:border-color .2s,box-shadow .2s;}
+    select:focus,input:focus{border-color:rgba(106,169,255,.55);box-shadow:0 0 0 3px rgba(106,169,255,.12);}
     select option:disabled{ color:rgba(234,240,255,.35); }
     .grid{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
-    button{margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer}
+    button{margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;background:linear-gradient(135deg,#6aa9ff 0%,#7ab4ff 45%,#5596f0 100%);color:var(--btnText);font-weight:800;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 4px 16px rgba(106,169,255,.3);font-family:inherit;}
+    button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(106,169,255,.45);}
+    button:not(:disabled):active{transform:translateY(0);box-shadow:0 2px 8px rgba(106,169,255,.2);}
     /* ===== DESKTOP SCALING ===== */
     @media(min-width:760px){
       .wrap{padding:36px}
-      .card{padding:28px 32px}
+      .card{padding:32px 36px;border-radius:28px;}
       .headerCenter{gap:10px;margin-bottom:22px}
-      h1{font-size:30px}
+      h1{font-size:32px;letter-spacing:-.3px;}
       #weekHeader{font-size:16px}
       .muted{font-size:15px}
       label{font-size:15px;margin:16px 0 8px}
@@ -50,7 +55,7 @@
     .msg.bad{color:var(--danger)}
     .small{font-size:12px;color:var(--muted);margin-top:10px;text-align:center;}
     a.linkbtn{display:block;text-decoration:none}
-    a.linkbtn button{margin-top:10px;background:rgba(255,255,255,.10);color:var(--text);border:1px solid rgba(255,255,255,.14)}
+    a.linkbtn button{margin-top:10px;background:rgba(255,255,255,.07);color:var(--text);border:1px solid rgba(255,255,255,.17);box-shadow:none;background-image:none;}
 
     /* ===== STATUS BAR ===== */
     #statusBar{
@@ -75,8 +80,8 @@
       gap:12px; text-align:center; min-height:122px;
       box-shadow:0 14px 40px rgba(0,0,0,.25);
     }
-    .sbox.ok{ background:linear-gradient(180deg, var(--tint-ok), rgba(0,0,0,.14)); border-color:var(--tint-border-ok); }
-    .sbox.bad{ background:linear-gradient(180deg, var(--tint-bad), rgba(0,0,0,.14)); border-color:var(--tint-border-bad); }
+    .sbox.ok{ background:linear-gradient(180deg, var(--tint-ok), rgba(0,0,0,.14)); border-color:var(--tint-border-ok); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(101,255,179,.1); }
+    .sbox.bad{ background:linear-gradient(180deg, var(--tint-bad), rgba(0,0,0,.14)); border-color:var(--tint-border-bad); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(255,106,106,.1); }
     .sbox.loading{ background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.08); }
     .sbox-title-row{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; }
     .sbox-title{ font-weight:1000; color:rgba(234,240,255,.96); font-size:18px; letter-spacing:.2px; line-height:1.1; }
@@ -97,6 +102,19 @@
     .sbox-sum-count.all{ color:var(--ok); }
     .sbox-sum-count.none{ color:var(--danger); }
     @media(min-width:760px){ .sbox-sum-count{ font-size:50px; } }
+
+    /* ===== Birthday Banner ===== */
+    #birthdayBanner{
+      display:none; margin:6px 0 2px;
+      padding:12px 16px; border-radius:14px;
+      background:linear-gradient(135deg,rgba(255,107,157,.18),rgba(199,125,255,.18));
+      border:1px solid rgba(255,107,157,.38);
+      color:rgba(234,240,255,.96); font-weight:700;
+      font-size:15px; text-align:center; letter-spacing:.2px;
+    }
+    #birthdayBanner.visible{display:block;animation:bdayIn .35s ease-out;}
+    @keyframes bdayIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    @media(min-width:760px){#birthdayBanner{font-size:16px;padding:14px 20px;}}
 
     /* prefetch dot */
     #prefetchDot{
@@ -297,6 +315,9 @@
           <div class="status-boxes" id="statusBoxes"></div>
         </div>
 
+        <!-- ===== BIRTHDAY BANNER ===== -->
+        <div id="birthdayBanner"></div>
+
         <div class="grid">
           <div>
             <label>วันที่บันทึก</label>
@@ -366,6 +387,126 @@
     x.setDate(x.getDate()+diff); return x;
   }
   function getTodayISO(){ return toISODateLocal(new Date()); }
+
+  // ===== BIRTHDAYS =====
+  const BIRTHDAYS = {
+    "สุรเชษฐ์ (ตั้ม)": { m:8, d:7 },
+    // เพิ่มวันเกิดสมาชิกคนอื่นที่นี่ เช่น "ชื่อ (ชื่อเล่น)": { m:เดือน, d:วัน }
+  };
+
+  const birthdayBannerEl = document.getElementById("birthdayBanner");
+  function showBirthdayBanner(name) {
+    birthdayBannerEl.textContent = `🎂  สุขสันต์วันเกิด ${name}! ขอให้มีความสุขมากๆ คิดสิ่งใดสมดั่งใจปรารถนาทุกประการ 🎉`;
+    birthdayBannerEl.classList.add("visible");
+    // confetti ยิงแค่ครั้งแรกของวัน
+    const todayKey = "bday_confetti_" + new Date().toISOString().slice(0,10);
+    if (!localStorage.getItem(todayKey)) {
+      localStorage.setItem(todayKey, "1");
+      initFestiveEffect("birthday");
+    }
+  }
+
+  function hideBirthdayBanner() {
+    birthdayBannerEl.classList.remove("visible");
+  }
+
+  // ===== FESTIVE EFFECTS =====
+  function initFestiveEffect(theme) {
+    if (!theme) return;
+    const cfg = {
+      birthday: {
+        colors: ['#ff6b9d','#ffd93d','#6bcb77','#4d96ff','#ff9f43','#c77dff','#ff6b6b','#ffffff'],
+        emojis: ['🎂','🎉','🎈','🥳','🎊'],
+        count: 55,
+        duration: 6000,
+        fadeOut: 2000
+      }
+    }[theme];
+    if (!cfg) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:0;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function mkP(fromTop) {
+      // emoji particles (~12% of the time)
+      if (Math.random() < 0.07 && cfg.emojis) {
+        return {
+          type:'emoji',
+          x: Math.random() * innerWidth,
+          y: fromTop ? -30 - Math.random() * 80 : Math.random() * innerHeight,
+          emoji: cfg.emojis[Math.floor(Math.random() * cfg.emojis.length)],
+          size: 18 + Math.random() * 18,
+          speed: 0.7 + Math.random() * 1.3,
+          wobble: Math.random() * Math.PI * 2,
+          ws: 0.03 + Math.random() * 0.03
+        };
+      }
+      // confetti: rect / circle / ribbon
+      const shape = Math.random() < 0.55 ? 'rect' : (Math.random() < 0.5 ? 'circle' : 'ribbon');
+      return {
+        type:'conf', shape,
+        x: Math.random() * innerWidth,
+        y: fromTop ? -20 - Math.random() * 60 : Math.random() * innerHeight,
+        w: shape === 'ribbon' ? 3 + Math.random() * 3 : 5 + Math.random() * 8,
+        h: shape === 'ribbon' ? 14 + Math.random() * 14 : 5 + Math.random() * 8,
+        color: cfg.colors[Math.floor(Math.random() * cfg.colors.length)],
+        speed: 0.8 + Math.random() * 1.6,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.13,
+        wobble: Math.random() * Math.PI * 2,
+        ws: 0.04 + Math.random() * 0.04
+      };
+    }
+
+    const parts = Array.from({ length: cfg.count }, () => mkP(false));
+    const t0 = Date.now();
+
+    (function draw() {
+      const el = Date.now() - t0;
+      if (el > cfg.duration + cfg.fadeOut) {
+        canvas.remove();
+        window.removeEventListener('resize', resize);
+        return;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const ga = el > cfg.duration ? 1 - (el - cfg.duration) / cfg.fadeOut : 1;
+
+      parts.forEach(p => {
+        p.y += p.speed;
+        p.wobble += p.ws;
+        p.x += Math.sin(p.wobble) * 0.8;
+        if (p.y > canvas.height + 40) {
+          Object.assign(p, mkP(true));
+          return;
+        }
+        ctx.save();
+        ctx.globalAlpha = (p.type === 'emoji' ? 0.88 : 0.82) * ga;
+        if (p.type === 'emoji') {
+          ctx.font = `${p.size}px serif`;
+          ctx.fillText(p.emoji, p.x, p.y);
+        } else {
+          p.angle += p.spin;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+          ctx.fillStyle = p.color;
+          if (p.shape === 'circle') {
+            ctx.beginPath();
+            ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          }
+        }
+        ctx.restore();
+      });
+      requestAnimationFrame(draw);
+    })();
+  }
 
   // ===== GREETING SPLASH =====
   const SKIP_GREET_KEY = "skipGreetOnce";
@@ -454,6 +595,7 @@
         const last = localStorage.getItem('meditation_last_name');
         const sel  = document.getElementById('nameSel');
         if(last && sel && !sel.value){ sel.value = last; sel.dispatchEvent(new Event('change')); }
+        if(special?.theme) initFestiveEffect(special.theme);
       }, { once: true });
     }
 
@@ -657,7 +799,16 @@
 
   nameSel.addEventListener("change", async () => {
     const name = (nameSel.value || "").trim();
-    if (!name) { hideStatus(); return; }
+    if (!name) { hideStatus(); hideBirthdayBanner(); return; }
+
+    // birthday check
+    const _now = new Date();
+    const _bday = BIRTHDAYS[name];
+    if (_bday && _bday.m === _now.getMonth()+1 && _bday.d === _now.getDate()) {
+      showBirthdayBanner(name);
+    } else {
+      hideBirthdayBanner();
+    }
 
     const logDate = getTodayISO();
     showStatusLoading();
