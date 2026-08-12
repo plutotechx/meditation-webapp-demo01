@@ -147,19 +147,6 @@
       font-style:italic;
     }
 
-    /* ===== Footer ===== */
-    .footer{
-      text-align:center;
-      margin-top:14px;
-      color:#64748b;
-      font-size:12px;
-      font-weight:600;
-    }
-    .footer a{
-      color:#3b82f6;
-      text-decoration:none;
-      font-weight:700;
-    }
 
     /* ===== Loading / error ===== */
     .loading{
@@ -185,19 +172,6 @@
       font-weight:600;
       opacity:.80;
       white-space:nowrap;
-    }
-    .live-dot{
-      width:7px;height:7px;
-      border-radius:50%;
-      background:#22c55e;
-      display:inline-block;
-      margin-right:4px;
-      animation:pulse 1.5s infinite;
-    }
-    @keyframes pulse{
-      0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}
-      70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}
-      100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
     }
 
   </style>
@@ -232,10 +206,6 @@
     </div>
   </div>
 
-  <div class="footer">
-    <span class="live-dot"></span>อัปเดตอัตโนมัติทุก 2 นาที &nbsp;·&nbsp;
-    <a href="/dashboard.html">Dashboard เต็ม</a>
-  </div>
 
 </div>
 
@@ -268,27 +238,26 @@
     const people = out.people || [];
     const total  = people.length;
 
-    // Categorise by today's count
-    const g3=[],g2=[],g1=[],g0=[];
+    // Categorise by today's count — 2 groups only
+    const gDone=[], gLeft=[];
     for(const p of people){
       const perDay = Array.isArray(p.perDay)?p.perDay:[];
       const d = perDay.find(x=>String(x.dateISO||'')===todayISO);
       const cnt = d ? Number(d.count||0) : 0;
-      if(cnt>=3) g3.push(p.name);
-      else if(cnt===2) g2.push(p.name);
-      else if(cnt===1) g1.push(p.name);
-      else g0.push(p.name);
+      if(cnt>=3) gDone.push(p.name);
+      else gLeft.push(p.name);
     }
 
     const thSort = (a,b)=>String(a).localeCompare(String(b),'th');
-    [g3,g2,g1,g0].forEach(a=>a.sort(thSort));
+    gDone.sort(thSort);
+    gLeft.sort(thSort);
 
     // Header
     document.getElementById('hBadge').textContent = `${td.day}`;
     document.getElementById('hDate').textContent = `${td.d} ${td.month} ${td.be}`;
     document.getElementById('sTotal').textContent = `ทั้งหมด ${total} คน`;
-    document.getElementById('sDone').textContent  = `ครบแล้ว ${g3.length} คน`;
-    document.getElementById('sLeft').textContent  = `ยังขาด ${g2.length+g1.length+g0.length} คน`;
+    document.getElementById('sDone').textContent  = `ครบแล้ว ${gDone.length} คน`;
+    document.getElementById('sLeft').textContent  = `ยังขาด ${gLeft.length} คน`;
 
     // Update time
     document.getElementById('updTime').textContent = `อัปเดต ${nowHHmm()}`;
@@ -307,96 +276,63 @@
             <div class="section-title">ทำครบแล้ว</div>
             <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">ครบ 3/3 ครั้ง</div>
           </div>
-          <span class="section-count count-green">${g3.length} คน</span>
+          <span class="section-count count-green">${gDone.length} คน</span>
         </div>
-        <div class="name-grid">${chips(g3,'chip-green')}</div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div class="section-icon icon-amber">🕐</div>
-          <div>
-            <div class="section-title">ทำไม่ครบ — ขาดอีก 1 ครั้ง</div>
-            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">ทำมาแล้ว 2/3 ครั้ง</div>
-          </div>
-          <span class="section-count count-amber">${g2.length} คน</span>
-        </div>
-        <div class="name-grid">${chips(g2,'chip-amber')}</div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div class="section-icon icon-orange">⚠️</div>
-          <div>
-            <div class="section-title">ทำไม่ครบ — ขาดอีก 2 ครั้ง</div>
-            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">ทำมาแล้ว 1/3 ครั้ง</div>
-          </div>
-          <span class="section-count count-orange">${g1.length} คน</span>
-        </div>
-        <div class="name-grid">${chips(g1,'chip-orange')}</div>
+        <div class="name-grid">${chips(gDone,'chip-green')}</div>
       </div>
 
       <div class="section">
         <div class="section-header">
           <div class="section-icon icon-red">❌</div>
           <div>
-            <div class="section-title">ยังไม่ได้ทำเลย</div>
-            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">0/3 ครั้ง</div>
+            <div class="section-title">ยังไม่ครบ</div>
+            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">ทำได้ 0–2 ครั้ง</div>
           </div>
-          <span class="section-count count-red">${g0.length} คน</span>
+          <span class="section-count count-red">${gLeft.length} คน</span>
         </div>
-        <div class="name-grid">${chips(g0,'chip-red')}</div>
+        <div class="name-grid">${chips(gLeft,'chip-red')}</div>
       </div>
     `;
   }
 
-  // ===== Fetch with auto-retry =====
+  // ===== Fetch =====
   let inFlight = false;
-  let retryTimer = null;
 
-  function scheduleRetry(delayMs){
-    if(retryTimer) clearTimeout(retryTimer);
-    retryTimer = setTimeout(()=>{ retryTimer=null; load(true); }, delayMs);
-  }
-
-  async function load(isRetry=false){
+  async function load(){
     if(inFlight) return;
     inFlight = true;
-    if(!isRetry) document.getElementById('updTime').textContent = 'กำลังโหลด...';
+    const btn = document.getElementById('btnRefresh');
+    if(btn) btn.disabled = true;
+    document.getElementById('updTime').textContent = 'กำลังโหลด...';
     try{
       const res = await fetch('/api/dashboard?weekOffset=0',{cache:'no-store'});
       const out = await res.json().catch(()=>({}));
       if(!res.ok || !out.ok){
         const err = out.error || 'unknown';
         const isTimeout = /timeout|gas_timeout/i.test(err);
-        document.getElementById('updTime').textContent = isTimeout ? 'กำลังลองใหม่...' : 'เกิดข้อผิดพลาด';
-        // retry in 8s on timeout, 30s otherwise — only if content already rendered
+        document.getElementById('updTime').textContent = isTimeout ? 'หมดเวลา — ลองใหม่อีกครั้ง' : 'เกิดข้อผิดพลาด';
         const hasContent = document.getElementById('content').querySelector('.section');
         if(!hasContent){
           document.getElementById('content').innerHTML =
-            `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ — กำลังลองใหม่...</div>`;
+            `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ — กดรีเฟรชเพื่อลองใหม่</div>`;
         }
-        scheduleRetry(isTimeout ? 8_000 : 30_000);
         return;
       }
       render(out);
     }catch(e){
-      document.getElementById('updTime').textContent = 'กำลังลองใหม่...';
+      document.getElementById('updTime').textContent = 'เกิดข้อผิดพลาด';
       const hasContent = document.getElementById('content').querySelector('.section');
       if(!hasContent){
         document.getElementById('content').innerHTML =
-          `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ — กำลังลองใหม่...</div>`;
+          `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ — กดรีเฟรชเพื่อลองใหม่</div>`;
       }
-      scheduleRetry(10_000);
     }finally{
       inFlight = false;
+      if(btn) btn.disabled = false;
     }
   }
 
-  // Auto-refresh every 2 minutes
   load();
-  setInterval(()=>{ if(!document.hidden) load(); }, 120_000);
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) load(); });
 </script>
 </body>
 </html>
