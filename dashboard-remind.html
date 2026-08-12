@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>รายงานสมาธิประจำวัน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Sarabun',system-ui,-apple-system,sans-serif;
+      background:#f0f4f8;
+      min-height:100vh;
+      padding:16px 12px 32px;
+      color:#1a202c;
+    }
+
+    .page{
+      max-width:480px;
+      margin:0 auto;
+    }
+
+    /* ===== Header card ===== */
+    .header{
+      background:linear-gradient(135deg,#1a56db 0%,#3b82f6 50%,#60a5fa 100%);
+      border-radius:20px;
+      padding:20px 20px 18px;
+      color:#fff;
+      margin-bottom:14px;
+      box-shadow:0 4px 20px rgba(37,99,235,.30);
+    }
+    .header-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .header-logo{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:-.2px;
+    }
+    .header-badge{
+      background:rgba(255,255,255,.20);
+      border:1px solid rgba(255,255,255,.30);
+      border-radius:999px;
+      padding:4px 12px;
+      font-size:12px;
+      font-weight:700;
+    }
+    .header-date{
+      font-size:28px;
+      font-weight:800;
+      line-height:1.1;
+      margin-bottom:4px;
+    }
+    .header-sub{
+      font-size:13px;
+      font-weight:500;
+      opacity:.85;
+    }
+    .header-stats{
+      display:flex;
+      gap:8px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    .stat-pill{
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.28);
+      border-radius:999px;
+      padding:5px 12px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    /* ===== Section cards ===== */
+    .section{
+      background:#fff;
+      border-radius:16px;
+      padding:14px 14px 12px;
+      margin-bottom:10px;
+      box-shadow:0 1px 6px rgba(0,0,0,.08);
+      border:1px solid #e2e8f0;
+    }
+    .section-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:11px;
+    }
+    .section-icon{
+      width:36px;height:36px;
+      border-radius:12px;
+      display:grid;place-items:center;
+      font-size:18px;
+      flex:0 0 auto;
+    }
+    .icon-green{ background:#dcfce7; }
+    .icon-amber{ background:#fef9c3; }
+    .icon-orange{ background:#ffedd5; }
+    .icon-red{   background:#fee2e2; }
+
+    .section-title{
+      font-size:15px;
+      font-weight:800;
+      line-height:1.2;
+    }
+    .section-count{
+      margin-left:auto;
+      font-size:13px;
+      font-weight:800;
+      padding:4px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .count-green{ background:#dcfce7; color:#166534; }
+    .count-amber{ background:#fef9c3; color:#854d0e; }
+    .count-orange{ background:#ffedd5; color:#9a3412; }
+    .count-red{   background:#fee2e2; color:#991b1b; }
+
+    .name-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+    }
+    .name-chip{
+      font-size:13px;
+      font-weight:700;
+      padding:5px 11px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .chip-green{ background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
+    .chip-amber{ background:#fef9c3; color:#713f12; border:1px solid #fde68a; }
+    .chip-orange{ background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; }
+    .chip-red{   background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+    .chip-empty{
+      font-size:13px;
+      font-weight:600;
+      color:#94a3b8;
+      font-style:italic;
+    }
+
+    /* ===== Footer ===== */
+    .footer{
+      text-align:center;
+      margin-top:14px;
+      color:#64748b;
+      font-size:12px;
+      font-weight:600;
+    }
+    .footer a{
+      color:#3b82f6;
+      text-decoration:none;
+      font-weight:700;
+    }
+
+    /* ===== Loading / error ===== */
+    .loading{
+      text-align:center;
+      padding:40px 0;
+      color:#64748b;
+      font-size:15px;
+      font-weight:600;
+    }
+    .loading .spin{
+      display:inline-block;
+      width:28px;height:28px;
+      border:3px solid #e2e8f0;
+      border-top-color:#3b82f6;
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+      margin-bottom:10px;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ===== Refresh button ===== */
+    .refresh-bar{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      margin-bottom:6px;
+    }
+    .btn-refresh{
+      background:#fff;
+      border:1px solid #cbd5e1;
+      border-radius:999px;
+      padding:6px 14px;
+      font-family:inherit;
+      font-size:13px;
+      font-weight:700;
+      color:#475569;
+      cursor:pointer;
+      display:flex;align-items:center;gap:6px;
+      box-shadow:0 1px 4px rgba(0,0,0,.08);
+    }
+    .btn-refresh:hover{background:#f8fafc}
+    .btn-refresh:active{background:#f1f5f9}
+    .upd-time{
+      font-size:12px;
+      font-weight:600;
+      color:#94a3b8;
+    }
+    .live-dot{
+      width:7px;height:7px;
+      border-radius:50%;
+      background:#22c55e;
+      display:inline-block;
+      margin-right:4px;
+      animation:pulse 1.5s infinite;
+    }
+    @keyframes pulse{
+      0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}
+      70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}
+      100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
+    }
+
+    /* ===== Back link ===== */
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      font-weight:700;
+      color:#3b82f6;
+      text-decoration:none;
+      margin-bottom:12px;
+    }
+    .back-link:hover{color:#2563eb}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back-link" href="/dashboard.html">← กลับ Dashboard</a>
+
+  <div class="refresh-bar">
+    <span class="upd-time" id="updTime">กำลังโหลด...</span>
+    <button class="btn-refresh" id="btnRefresh" onclick="load()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+      รีเฟรช
+    </button>
+  </div>
+
+  <div id="header" class="header">
+    <div class="header-top">
+      <div class="header-logo">🧘 สมาธิประจำวัน</div>
+      <div class="header-badge" id="hBadge">—</div>
+    </div>
+    <div class="header-date" id="hDate">—</div>
+    <div class="header-sub">สรุปการปฏิบัติสมาธิวันนี้</div>
+    <div class="header-stats" id="hStats">
+      <span class="stat-pill" id="sTotal">ทั้งหมด — คน</span>
+      <span class="stat-pill" id="sDone">ครบแล้ว —</span>
+      <span class="stat-pill" id="sLeft">ยังขาด —</span>
+    </div>
+  </div>
+
+  <div id="content">
+    <div class="loading">
+      <div class="spin"></div><br>กำลังโหลดข้อมูล...
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="live-dot"></span>อัปเดตอัตโนมัติทุก 2 นาที &nbsp;·&nbsp;
+    <a href="/dashboard.html">Dashboard เต็ม</a>
+  </div>
+
+</div>
+
+<script>
+  // ===== Utils =====
+  function escHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) }
+
+  function getTodayISO(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function thaiDate(iso){
+    const [y,m,d] = iso.split('-').map(Number);
+    const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const days   = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+    const dt = new Date(y, m-1, d);
+    return { day: days[dt.getDay()], d: d, month: months[m-1], be: y+543 };
+  }
+
+  function nowHHmm(){
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} น.`;
+  }
+
+  // ===== Render =====
+  function render(out){
+    const todayISO = getTodayISO();
+    const td = thaiDate(todayISO);
+    const people = out.people || [];
+    const total  = people.length;
+
+    // Categorise by today's count
+    const g3=[],g2=[],g1=[],g0=[];
+    for(const p of people){
+      const perDay = Array.isArray(p.perDay)?p.perDay:[];
+      const d = perDay.find(x=>String(x.dateISO||'')===todayISO);
+      const cnt = d ? Number(d.count||0) : 0;
+      if(cnt>=3) g3.push(p.name);
+      else if(cnt===2) g2.push(p.name);
+      else if(cnt===1) g1.push(p.name);
+      else g0.push(p.name);
+    }
+
+    const thSort = (a,b)=>String(a).localeCompare(String(b),'th');
+    [g3,g2,g1,g0].forEach(a=>a.sort(thSort));
+
+    // Header
+    document.getElementById('hBadge').textContent = `${td.day}`;
+    document.getElementById('hDate').textContent = `${td.d} ${td.month} ${td.be}`;
+    document.getElementById('sTotal').textContent = `ทั้งหมด ${total} คน`;
+    document.getElementById('sDone').textContent  = `ครบแล้ว ${g3.length} คน`;
+    document.getElementById('sLeft').textContent  = `ยังขาด ${g2.length+g1.length+g0.length} คน`;
+
+    // Update time
+    document.getElementById('updTime').textContent = `อัปเดต ${nowHHmm()}`;
+
+    // Content
+    const chips = (arr, cls) =>
+      arr.length
+        ? arr.map(n=>`<span class="name-chip ${cls}">${escHtml(n)}</span>`).join('')
+        : `<span class="chip-empty">— ไม่มี —</span>`;
+
+    document.getElementById('content').innerHTML = `
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-green">✅</div>
+          <div>
+            <div class="section-title">ทำครบแล้ว</div>
+            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">ครบ 3/3 ครั้ง</div>
+          </div>
+          <span class="section-count count-green">${g3.length} คน</span>
+        </div>
+        <div class="name-grid">${chips(g3,'chip-green')}</div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-amber">🕐</div>
+          <div>
+            <div class="section-title">ทำไม่ครบ — ขาดอีก 1 ครั้ง</div>
+            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">ทำมาแล้ว 2/3 ครั้ง</div>
+          </div>
+          <span class="section-count count-amber">${g2.length} คน</span>
+        </div>
+        <div class="name-grid">${chips(g2,'chip-amber')}</div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-orange">⚠️</div>
+          <div>
+            <div class="section-title">ทำไม่ครบ — ขาดอีก 2 ครั้ง</div>
+            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">ทำมาแล้ว 1/3 ครั้ง</div>
+          </div>
+          <span class="section-count count-orange">${g1.length} คน</span>
+        </div>
+        <div class="name-grid">${chips(g1,'chip-orange')}</div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-red">❌</div>
+          <div>
+            <div class="section-title">ยังไม่ได้ทำเลย</div>
+            <div style="font-size:12px;color:#64748b;font-weight:600;margin-top:1px">0/3 ครั้ง</div>
+          </div>
+          <span class="section-count count-red">${g0.length} คน</span>
+        </div>
+        <div class="name-grid">${chips(g0,'chip-red')}</div>
+      </div>
+    `;
+  }
+
+  // ===== Fetch =====
+  let inFlight = false;
+  async function load(){
+    if(inFlight) return;
+    inFlight = true;
+    document.getElementById('updTime').textContent = 'กำลังโหลด...';
+    try{
+      const res = await fetch('/api/dashboard?weekOffset=0',{cache:'no-store'});
+      const out = await res.json().catch(()=>({}));
+      if(!res.ok || !out.ok){
+        document.getElementById('content').innerHTML =
+          `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ: ${escHtml(out.error||'unknown')}</div>`;
+        document.getElementById('updTime').textContent = 'เกิดข้อผิดพลาด';
+        return;
+      }
+      render(out);
+    }catch(e){
+      document.getElementById('content').innerHTML =
+        `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ: ${escHtml(String(e))}</div>`;
+      document.getElementById('updTime').textContent = 'เกิดข้อผิดพลาด';
+    }finally{
+      inFlight = false;
+    }
+  }
+
+  // Auto-refresh every 2 minutes
+  load();
+  setInterval(()=>{ if(!document.hidden) load(); }, 120_000);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) load(); });
+</script>
+</body>
+</html>
