@@ -230,7 +230,7 @@
   }
 
   // ===== Render =====
-  function render(out){
+  function render(out, fromCache=false){
     const todayISO = getTodayISO();
     const td = thaiDate(todayISO);
     const people = out.people || [];
@@ -251,7 +251,7 @@
     gLeft.sort(thSort);
 
     // Header
-    document.getElementById('hDate').textContent = `${td.d} ${td.month} ${td.be}`;
+    document.getElementById('hDate').textContent = `${td.d} ${td.month} ${td.be}${fromCache ? '  ·  กำลังอัปเดต...' : ''}`;
 
     // Content
     const chips = (arr, cls) =>
@@ -286,53 +286,93 @@
     `;
   }
 
-  // ===== Fetch =====
+  // ===== Cache =====
+  const CACHE_KEY = 'remind_cache';
+  function saveCache(out){
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: out })); }catch(e){}
+  }
+  function loadCache(){
+    try{ const r = localStorage.getItem(CACHE_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; }
+  }
+
+  // ===== Fetch with aggressive retry =====
+  // GAS cold-start fix: abort after 20s and retry immediately (up to 4 attempts)
+  // GAS usually warms up by attempt 2-3, making total wait ~20-40s instead of 60s+
+
+  const MAX_ATTEMPTS = 4;
+  const ATTEMPT_TIMEOUT_MS = 20_000; // abort each attempt after 20s
   let inFlight = false;
-  let retryTimer = null;
+  let attempt = 0;
+  let currentCtrl = null;
+
+  function setStatus(msg){
+    document.getElementById('hDate') && (document.getElementById('hDate').dataset.status = msg);
+    // show in header date area as small suffix
+    const el = document.getElementById('hDate');
+    if(el){
+      const base = el.dataset.base || el.textContent.split('  ·')[0];
+      el.dataset.base = base;
+      el.textContent = msg ? `${base}  ·  ${msg}` : base;
+    }
+  }
+
+  async function fetchOnce(){
+    currentCtrl = new AbortController();
+    const timer = setTimeout(()=> currentCtrl.abort(), ATTEMPT_TIMEOUT_MS);
+    try{
+      const res = await fetch('/api/dashboard?weekOffset=0',{ cache:'no-store', signal: currentCtrl.signal });
+      clearTimeout(timer);
+      const out = await res.json().catch(()=>({}));
+      if(!res.ok || !out.ok) throw new Error(out.error || 'api_error');
+      return out;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
 
   async function load(){
     if(inFlight) return;
     inFlight = true;
-    if(retryTimer){ clearTimeout(retryTimer); retryTimer = null; }
+    attempt = 0;
     const btn = document.getElementById('btnRefresh');
     if(btn) btn.disabled = true;
-    document.getElementById('hBadge').title = 'กำลังโหลด...';
-    try{
-      const res = await fetch('/api/dashboard?weekOffset=0',{cache:'no-store'});
-      const out = await res.json().catch(()=>({}));
-      if(!res.ok || !out.ok){
-        const err = out.error || 'unknown';
-        const isTimeout = /timeout|gas_timeout/i.test(err);
-        const hasContent = document.getElementById('content').querySelector('.section');
-        if(isTimeout){
-          // timeout → retry อัตโนมัติใน 8 วินาที (เงียบๆ ถ้ามีข้อมูลแสดงอยู่แล้ว)
-          document.getElementById('hBadge').title = 'กำลังลองใหม่...';
-          if(!hasContent){
-            document.getElementById('content').innerHTML =
-              `<div class="loading" style="color:#64748b">กำลังโหลด — รอสักครู่...</div>`;
-          }
-          retryTimer = setTimeout(()=>{ retryTimer=null; load(); }, 8_000);
-        } else {
-          document.getElementById('hBadge').title = 'เกิดข้อผิดพลาด';
-          if(!hasContent){
-            document.getElementById('content').innerHTML =
-              `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ — กดรีเฟรชเพื่อลองใหม่</div>`;
-          }
-        }
+
+    // Show cache instantly
+    const cached = loadCache();
+    if(cached && !document.getElementById('content').querySelector('.section')){
+      render(cached.data, true);
+    }
+
+    let lastErr = null;
+    while(attempt < MAX_ATTEMPTS){
+      attempt++;
+      const isLast = attempt === MAX_ATTEMPTS;
+      setStatus(attempt === 1 ? 'กำลังโหลด...' : `กำลังลองใหม่... (${attempt}/${MAX_ATTEMPTS})`);
+
+      try{
+        const out = await fetchOnce();
+        saveCache(out);
+        render(out, false);
+        inFlight = false;
+        if(btn) btn.disabled = false;
         return;
+      } catch(e){
+        lastErr = e;
+        const aborted = e.name === 'AbortError';
+        if(isLast) break;
+        // short pause before retry (0.5s) so browser can breathe
+        await new Promise(r => setTimeout(r, 500));
       }
-      render(out);
-    }catch(e){
-      const hasContent = document.getElementById('content').querySelector('.section');
-      document.getElementById('hBadge').title = 'กำลังลองใหม่...';
-      if(!hasContent){
-        document.getElementById('content').innerHTML =
-          `<div class="loading" style="color:#64748b">กำลังโหลด — รอสักครู่...</div>`;
-      }
-      retryTimer = setTimeout(()=>{ retryTimer=null; load(); }, 8_000);
-    }finally{
-      inFlight = false;
-      if(btn) btn.disabled = false;
+    }
+
+    // All attempts failed
+    inFlight = false;
+    if(btn) btn.disabled = false;
+    const hasSections = document.getElementById('content').querySelector('.section');
+    setStatus('โหลดไม่สำเร็จ — กดรีเฟรช');
+    if(!hasSections){
+      document.getElementById('content').innerHTML =
+        `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ — กดรีเฟรชเพื่อลองใหม่</div>`;
     }
   }
 
