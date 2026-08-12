@@ -103,19 +103,6 @@
     .sbox-sum-count.none{ color:var(--danger); }
     @media(min-width:760px){ .sbox-sum-count{ font-size:50px; } }
 
-    /* ===== Birthday Banner ===== */
-    #birthdayBanner{
-      display:none; margin:6px 0 2px;
-      padding:12px 16px; border-radius:14px;
-      background:linear-gradient(135deg,rgba(255,107,157,.18),rgba(199,125,255,.18));
-      border:1px solid rgba(255,107,157,.38);
-      color:rgba(234,240,255,.96); font-weight:700;
-      font-size:15px; text-align:center; letter-spacing:.2px;
-    }
-    #birthdayBanner.visible{display:block;animation:bdayIn .35s ease-out;}
-    @keyframes bdayIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-    @media(min-width:760px){#birthdayBanner{font-size:16px;padding:14px 20px;}}
-
     /* prefetch dot */
     #prefetchDot{
       display:inline-block;width:6px;height:6px;border-radius:50%;
@@ -315,9 +302,6 @@
           <div class="status-boxes" id="statusBoxes"></div>
         </div>
 
-        <!-- ===== BIRTHDAY BANNER ===== -->
-        <div id="birthdayBanner"></div>
-
         <div class="grid">
           <div>
             <label>วันที่บันทึก</label>
@@ -387,25 +371,6 @@
     x.setDate(x.getDate()+diff); return x;
   }
   function getTodayISO(){ return toISODateLocal(new Date()); }
-
-  // ===== BIRTHDAYS =====
-  const BIRTHDAYS = {
-    "สุรเชษฐ์ (ตั้ม)":    { m:8, d:7 },
-    "สุรุ่งรัตน์ (เก่ง)": { m:8, d:7 },
-    "ฐิตภรณ์ (เบลล์)":    { m:8, d:7 },
-    // เพิ่มวันเกิดสมาชิกคนอื่นที่นี่ เช่น "ชื่อ (ชื่อเล่น)": { m:เดือน, d:วัน }
-  };
-
-  const birthdayBannerEl = document.getElementById("birthdayBanner");
-  function showBirthdayBanner(name) {
-    birthdayBannerEl.textContent = `🎂  สุขสันต์วันเกิด ${name}! ขอให้มีความสุขมากๆ คิดสิ่งใดสมดั่งใจปรารถนาทุกประการ 🎉`;
-    birthdayBannerEl.classList.add("visible");
-    initFestiveEffect("birthday");
-  }
-
-  function hideBirthdayBanner() {
-    birthdayBannerEl.classList.remove("visible");
-  }
 
   // ===== FESTIVE EFFECTS =====
   function initFestiveEffect(theme) {
@@ -796,16 +761,7 @@
 
   nameSel.addEventListener("change", async () => {
     const name = (nameSel.value || "").trim();
-    if (!name) { hideStatus(); hideBirthdayBanner(); return; }
-
-    // birthday check
-    const _now = new Date();
-    const _bday = BIRTHDAYS[name];
-    if (_bday && _bday.m === _now.getMonth()+1 && _bday.d === _now.getDate()) {
-      showBirthdayBanner(name);
-    } else {
-      hideBirthdayBanner();
-    }
+    if (!name) { hideStatus(); return; }
 
     const logDate = getTodayISO();
     showStatusLoading();
