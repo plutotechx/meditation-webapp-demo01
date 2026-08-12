@@ -23,20 +23,20 @@
     /* ===== Header card ===== */
     .header{
       background:linear-gradient(135deg,#1a56db 0%,#3b82f6 50%,#60a5fa 100%);
-      border-radius:20px;
-      padding:20px 20px 18px;
+      border-radius:16px;
+      padding:12px 14px 12px;
       color:#fff;
-      margin-bottom:14px;
-      box-shadow:0 4px 20px rgba(37,99,235,.30);
+      margin-bottom:12px;
+      box-shadow:0 4px 16px rgba(37,99,235,.28);
     }
     .header-top{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      margin-bottom:10px;
+      margin-bottom:7px;
     }
     .header-logo{
-      font-size:22px;
+      font-size:16px;
       font-weight:800;
       letter-spacing:-.2px;
     }
@@ -44,35 +44,46 @@
       background:rgba(255,255,255,.20);
       border:1px solid rgba(255,255,255,.30);
       border-radius:999px;
-      padding:4px 12px;
+      padding:3px 10px;
       font-size:12px;
       font-weight:700;
     }
-    .header-date{
-      font-size:28px;
+    .header-row2{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .header-date-sm{
+      font-size:18px;
       font-weight:800;
       line-height:1.1;
-      margin-bottom:4px;
-    }
-    .header-sub{
-      font-size:13px;
-      font-weight:500;
-      opacity:.85;
     }
     .header-stats{
       display:flex;
-      gap:8px;
-      margin-top:14px;
+      gap:6px;
       flex-wrap:wrap;
     }
     .stat-pill{
       background:rgba(255,255,255,.18);
       border:1px solid rgba(255,255,255,.28);
       border-radius:999px;
-      padding:5px 12px;
-      font-size:13px;
+      padding:3px 10px;
+      font-size:12px;
       font-weight:700;
     }
+    .btn-refresh-sm{
+      background:rgba(255,255,255,.20);
+      border:1px solid rgba(255,255,255,.30);
+      border-radius:999px;
+      width:28px;height:28px;
+      display:grid;place-items:center;
+      cursor:pointer;
+      color:#fff;
+      flex:0 0 auto;
+    }
+    .btn-refresh-sm:hover{background:rgba(255,255,255,.30)}
 
     /* ===== Section cards ===== */
     .section{
@@ -175,33 +186,11 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ===== Refresh button ===== */
-    .refresh-bar{
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:10px;
-      margin-bottom:6px;
-    }
-    .btn-refresh{
-      background:#fff;
-      border:1px solid #cbd5e1;
-      border-radius:999px;
-      padding:6px 14px;
-      font-family:inherit;
-      font-size:13px;
-      font-weight:700;
-      color:#475569;
-      cursor:pointer;
-      display:flex;align-items:center;gap:6px;
-      box-shadow:0 1px 4px rgba(0,0,0,.08);
-    }
-    .btn-refresh:hover{background:#f8fafc}
-    .btn-refresh:active{background:#f1f5f9}
     .upd-time{
-      font-size:12px;
+      font-size:11px;
       font-weight:600;
-      color:#94a3b8;
+      opacity:.80;
+      white-space:nowrap;
     }
     .live-dot{
       width:7px;height:7px;
@@ -217,40 +206,25 @@
       100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
     }
 
-    /* ===== Back link ===== */
-    .back-link{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-size:13px;
-      font-weight:700;
-      color:#3b82f6;
-      text-decoration:none;
-      margin-bottom:12px;
-    }
-    .back-link:hover{color:#2563eb}
   </style>
 </head>
 <body>
 <div class="page">
 
-  <a class="back-link" href="/dashboard.html">← กลับ Dashboard</a>
-
-  <div class="refresh-bar">
-    <span class="upd-time" id="updTime">กำลังโหลด...</span>
-    <button class="btn-refresh" id="btnRefresh" onclick="load()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
-      รีเฟรช
-    </button>
-  </div>
-
-  <div id="header" class="header">
+  <div class="header">
     <div class="header-top">
       <div class="header-logo">🧘 สมาธิประจำวัน</div>
-      <div class="header-badge" id="hBadge">—</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="header-badge" id="hBadge">—</div>
+        <button class="btn-refresh-sm" id="btnRefresh" onclick="load()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        </button>
+      </div>
     </div>
-    <div class="header-date" id="hDate">—</div>
-    <div class="header-sub">สรุปการปฏิบัติสมาธิวันนี้</div>
+    <div class="header-row2">
+      <span class="header-date-sm" id="hDate">—</span>
+      <span class="upd-time" id="updTime">กำลังโหลด...</span>
+    </div>
     <div class="header-stats" id="hStats">
       <span class="stat-pill" id="sTotal">ทั้งหมด — คน</span>
       <span class="stat-pill" id="sDone">ครบแล้ว —</span>
