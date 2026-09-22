@@ -130,14 +130,27 @@ export async function onRequestPost(ctx) {
           body:    JSON.stringify(payload),
         }, FETCH_TIMEOUT);
 
-        out = await res.json().catch(() => ({}));
+        // อ่าน raw text ก่อน แล้วค่อย parse — เพื่อ debug ถ้า GAS คืน non-JSON
+        const rawText = await res.text().catch(() => "");
+        try { out = JSON.parse(rawText); } catch (_) { out = {}; }
 
-        // ✅ สำเร็จ — break ออกจาก loop
-        if (res.ok && out.ok !== false) break;
+        // log raw ถ้า parse ไม่ได้ (เก็บแค่ 300 ตัวอักษร)
+        if (!out || out.ok === undefined) {
+          console.log("[submit] GAS raw response:", rawText.slice(0, 300));
+        }
+
+        // ✅ สำเร็จ — ต้อง ok === true อย่างชัดเจน
+        if (res.ok && out.ok === true) break;
 
         // GAS ตอบกลับแต่มี error — ถ้าเป็น server_busy ให้ retry
         if (out.error === "server_busy_retry" && attempt < MAX_RETRIES) {
           lastError = "server_busy_retry";
+          continue;
+        }
+
+        // parse ไม่ได้ (out = {}) — ลอง retry ครั้งเดียว
+        if ((!out.ok && !out.error) && attempt < MAX_RETRIES) {
+          lastError = "gas_no_json";
           continue;
         }
 
@@ -166,7 +179,8 @@ export async function onRequestPost(ctx) {
     }
 
     // ── Return response ──
-    const status = res?.ok ? 200 : 500;
+    // ถ้า out.ok === true → 200, อื่นๆ → 500
+    const status = (out?.ok === true) ? 200 : (res?.ok ? 200 : 500);
     const headers = {
       "Content-Type":                "application/json; charset=utf-8",
       "Cache-Control":               "no-store",
