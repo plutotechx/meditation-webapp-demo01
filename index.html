@@ -37,6 +37,19 @@
     button{margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;background:linear-gradient(135deg,#6aa9ff 0%,#7ab4ff 45%,#5596f0 100%);color:var(--btnText);font-weight:800;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 4px 16px rgba(106,169,255,.3);font-family:inherit;}
     button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(106,169,255,.45);}
     button:not(:disabled):active{transform:translateY(0);box-shadow:0 2px 8px rgba(106,169,255,.2);}
+    /* ===== CUSTOM NAME DROPDOWN ===== */
+    .cs-wrap{position:relative;width:100%;}
+    .cs-btn{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:var(--input);color:#eaf0ff;padding:12px 16px;outline:none;transition:border-color .2s,box-shadow .2s;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:'Sarabun',system-ui,sans-serif;font-size:inherit;text-align:left;-webkit-appearance:none;appearance:none;}
+    .cs-btn:focus{border-color:rgba(168,197,255,.5);box-shadow:0 0 0 3px rgba(77,150,255,.15);}
+    .cs-chevron{transition:transform .2s;color:rgba(255,255,255,.4);font-size:11px;flex-shrink:0;margin-left:8px;}
+    .cs-wrap.open .cs-chevron{transform:rotate(180deg);}
+    .cs-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:999;background:#0e1e35;border:1px solid rgba(255,255,255,.2);border-radius:14px;max-height:55vh;overflow-y:auto;list-style:none;margin:0;padding:6px 0;box-shadow:0 8px 32px rgba(0,0,0,.6);}
+    .cs-wrap.open .cs-list{display:block;}
+    .cs-item{padding:13px 16px;color:#eaf0ff;cursor:pointer;transition:background .1s;user-select:none;-webkit-user-select:none;}
+    .cs-item:hover{background:rgba(255,255,255,.06);}
+    .cs-item:active{background:rgba(106,169,255,.18);}
+    .cs-item.cs-placeholder{color:rgba(234,240,255,.38);}
+    .cs-item.cs-selected{color:#a8c5ff;font-weight:600;}
     /* ===== DESKTOP SCALING ===== */
     @media(min-width:760px){
       .wrap{padding:36px}
@@ -255,7 +268,56 @@
 
       <form id="f">
         <label>ชื่อ - ชื่อเล่น <span id="prefetchDot" title="สถานะโหลดข้อมูลล่วงหน้า"></span></label>
-        <select name="name" id="nameSel" required>
+        <!-- Custom dropdown (replaces native select on mobile to avoid Android "เรียบร้อย" extra tap) -->
+        <div class="cs-wrap" id="nameSelWrap">
+          <button type="button" class="cs-btn" id="nameSelBtn" aria-haspopup="listbox" aria-expanded="false">
+            <span id="nameSelLabel">— เลือกชื่อ —</span>
+            <span class="cs-chevron">▼</span>
+          </button>
+          <ul class="cs-list" id="nameSelList" role="listbox">
+            <li class="cs-item cs-placeholder" data-value="">— เลือกชื่อ —</li>
+            <li class="cs-item" data-value="สุรเชษฐ์ (ตั้ม)">สุรเชษฐ์ (ตั้ม)</li>
+            <li class="cs-item" data-value="บัญญัติ (แดง)">บัญญัติ (แดง)</li>
+            <li class="cs-item" data-value="รัชเศรษฐ์ (ยศ)">รัชเศรษฐ์ (ยศ)</li>
+            <li class="cs-item" data-value="ชนุดม (ดอน)">ชนุดม (ดอน)</li>
+            <li class="cs-item" data-value="ทรงชัย (ทรง)">ทรงชัย (ทรง)</li>
+            <li class="cs-item" data-value="สุรุ่งรัตน์ (เก่ง)">สุรุ่งรัตน์ (เก่ง)</li>
+            <li class="cs-item" data-value="อติพร (โอ)">อติพร (โอ)</li>
+            <li class="cs-item" data-value="เกสณี (เก๋)">เกสณี (เก๋)</li>
+            <li class="cs-item" data-value="สมภพ (เอก)">สมภพ (เอก)</li>
+            <li class="cs-item" data-value="ฐิตภรณ์ (เบลล์)">ฐิตภรณ์ (เบลล์)</li>
+            <li class="cs-item" data-value="อุมาพร (นก)">อุมาพร (นก)</li>
+            <li class="cs-item" data-value="ณัฐพล (ท๊อด)">ณัฐพล (ท๊อด)</li>
+            <li class="cs-item" data-value="กิตติพงษ์ (พี)">กิตติพงษ์ (พี)</li>
+            <li class="cs-item" data-value="ธนพร (พร)">ธนพร (พร)</li>
+            <li class="cs-item" data-value="รายาวดี (เฟริน)">รายาวดี (เฟริน)</li>
+            <li class="cs-item" data-value="บัญญัติ (บอย)">บัญญัติ (บอย)</li>
+            <li class="cs-item" data-value="ธีรพล (ต้อม)">ธีรพล (ต้อม)</li>
+            <li class="cs-item" data-value="นริศ (เอ็กซ์)">นริศ (เอ็กซ์)</li>
+            <li class="cs-item" data-value="กิตติ (ตี๋)">กิตติ (ตี๋)</li>
+            <li class="cs-item" data-value="จารุวรรณ (จุ๋ม)">จารุวรรณ (จุ๋ม)</li>
+            <li class="cs-item" data-value="วรินทร (ต่อ)">วรินทร (ต่อ)</li>
+            <li class="cs-item" data-value="กิตติศักดิ์ (ใหม่)">กิตติศักดิ์ (ใหม่)</li>
+            <li class="cs-item" data-value="ราชัย (ชัย)">ราชัย (ชัย)</li>
+            <li class="cs-item" data-value="รัญชนา (จีน่า)">รัญชนา (จีน่า)</li>
+            <li class="cs-item" data-value="อรวรา (ผักแพว)">อรวรา (ผักแพว)</li>
+            <li class="cs-item" data-value="ธนกฤษ (พิว)">ธนกฤษ (พิว)</li>
+            <li class="cs-item" data-value="บุญฤทธิ์ (ใหม่)">บุญฤทธิ์ (ใหม่)</li>
+            <li class="cs-item" data-value="จิรายุทธ (ลีโอ)">จิรายุทธ (ลีโอ)</li>
+            <li class="cs-item" data-value="นนทชา (วิว)">นนทชา (วิว)</li>
+            <li class="cs-item" data-value="ยิ่งรัก (กุ้ง)">ยิ่งรัก (กุ้ง)</li>
+            <li class="cs-item" data-value="ศราวุฒิ (บอล)">ศราวุฒิ (บอล)</li>
+            <li class="cs-item" data-value="นันทพงศ์ (โบ๊ท)">นันทพงศ์ (โบ๊ท)</li>
+            <li class="cs-item" data-value="ณัฐวุฒิ (เฟียส)">ณัฐวุฒิ (เฟียส)</li>
+            <li class="cs-item" data-value="กฤษดา (โจ)">กฤษดา (โจ)</li>
+            <li class="cs-item" data-value="รณฤทธิ์ (เม่น)">รณฤทธิ์ (เม่น)</li>
+            <li class="cs-item" data-value="ธีรศักดิ์ (ต่าย)">ธีรศักดิ์ (ต่าย)</li>
+            <li class="cs-item" data-value="ณภัทร (ตัน)">ณภัทร (ตัน)</li>
+            <li class="cs-item" data-value="เอกพจน์ (เอก)">เอกพจน์ (เอก)</li>
+          </ul>
+        </div>
+        <!-- Hidden native select keeps all JS (nameSel.value, change event, form submit) working -->
+        <select name="name" id="nameSel" required style="display:none;" aria-hidden="true" tabindex="-1">
           <option value="">— เลือกชื่อ —</option>
           <option>สุรเชษฐ์ (ตั้ม)</option>
           <option>บัญญัติ (แดง)</option>
@@ -685,6 +747,64 @@
   const statusBar   = document.getElementById("statusBar");
   const statusBoxes = document.getElementById("statusBoxes");
   const nameSel     = document.getElementById("nameSel");
+
+  // ===== CUSTOM DROPDOWN CONTROLLER =====
+  (function(){
+    const wrap  = document.getElementById("nameSelWrap");
+    const btn   = document.getElementById("nameSelBtn");
+    const label = document.getElementById("nameSelLabel");
+    const list  = document.getElementById("nameSelList");
+    if(!wrap || !btn || !list) return;
+
+    function open(){
+      wrap.classList.add("open");
+      btn.setAttribute("aria-expanded","true");
+    }
+    function close(){
+      wrap.classList.remove("open");
+      btn.setAttribute("aria-expanded","false");
+    }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      wrap.classList.contains("open") ? close() : open();
+    });
+
+    list.addEventListener("click", function(e){
+      const item = e.target.closest(".cs-item");
+      if(!item) return;
+      const val = item.dataset.value;
+      // Update label
+      label.textContent = val || "— เลือกชื่อ —";
+      // Sync hidden native select
+      nameSel.value = val;
+      // Mark selected item
+      list.querySelectorAll(".cs-item").forEach(function(li){ li.classList.remove("cs-selected"); });
+      if(val) item.classList.add("cs-selected");
+      close();
+      // Fire change event so existing nameSel listeners trigger
+      nameSel.dispatchEvent(new Event("change"));
+    });
+
+    // Close on outside tap/click
+    document.addEventListener("click", function(e){
+      if(!wrap.contains(e.target)) close();
+    });
+
+    // Sync custom dropdown when code sets nameSel.value directly (e.g. localStorage restore)
+    const origDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
+    Object.defineProperty(nameSel,"value",{
+      get: function(){ return origDescriptor.get.call(this); },
+      set: function(v){
+        origDescriptor.set.call(this, v);
+        label.textContent = v || "— เลือกชื่อ —";
+        list.querySelectorAll(".cs-item").forEach(function(li){
+          li.classList.toggle("cs-selected", li.dataset.value === v && v !== "");
+        });
+      }
+    });
+  })();
+
   let fallbackAbort = null;
   let fallbackCache = {};
   let allDoneTimer  = null;
