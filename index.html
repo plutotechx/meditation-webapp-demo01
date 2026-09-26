@@ -551,6 +551,21 @@
   const justSubmitted = sessionStorage.getItem(JUST_SUBMITTED_KEY) === "1";
   sessionStorage.removeItem(JUST_SUBMITTED_KEY);
 
+  // ── ?fest=xxx URL param — ทดสอบ theme ได้ทันที ──
+  (function(){
+    const FEST_THEME_MAP = {
+      newyear:   'fireworks', newyeareve: 'fireworks',
+      xmas:      'xmas',      songkran:   'songkran',
+      loy:       'loy',       buddhist:   'buddhist',
+      birthday:  'birthday'
+    };
+    const urlFest = new URLSearchParams(location.search).get('fest');
+    if (urlFest && FEST_THEME_MAP[urlFest]) {
+      document.body.dataset.fest = urlFest;
+      initFestiveEffect(FEST_THEME_MAP[urlFest]);
+    }
+  })();
+
   (function(){
     const splash = document.getElementById("greetSplash");
 
