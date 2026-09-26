@@ -139,18 +139,12 @@ export async function onRequestPost(ctx) {
           console.log("[submit] GAS raw response:", rawText.slice(0, 300));
         }
 
-        // ✅ สำเร็จ — ต้อง ok === true อย่างชัดเจน
-        if (res.ok && out.ok === true) break;
+        // ✅ สำเร็จ — ใช้เงื่อนไขเดียวกับ production (out.ok !== false)
+        if (res.ok && out.ok !== false) break;
 
         // GAS ตอบกลับแต่มี error — ถ้าเป็น server_busy ให้ retry
         if (out.error === "server_busy_retry" && attempt < MAX_RETRIES) {
           lastError = "server_busy_retry";
-          continue;
-        }
-
-        // parse ไม่ได้ (out = {}) — ลอง retry ครั้งเดียว
-        if ((!out.ok && !out.error) && attempt < MAX_RETRIES) {
-          lastError = "gas_no_json";
           continue;
         }
 
@@ -179,8 +173,7 @@ export async function onRequestPost(ctx) {
     }
 
     // ── Return response ──
-    // ถ้า out.ok === true → 200, อื่นๆ → 500
-    const status = (out?.ok === true) ? 200 : (res?.ok ? 200 : 500);
+    const status = res?.ok ? 200 : 500;
     const headers = {
       "Content-Type":                "application/json; charset=utf-8",
       "Cache-Control":               "no-store",
