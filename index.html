@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Update Daily Meditation</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap');
     :root{
       --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.12);
       --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
@@ -20,56 +19,26 @@
       --tint-border-bad: rgba(255,106,106,.34);
     }
     *{box-sizing:border-box}
-    body{font-family:'Sarabun',system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:linear-gradient(160deg,#0c1829 0%,#101f38 40%,#0d1b31 70%,#0a1520 100%);background-attachment:fixed;color:var(--text);min-height:100vh;}
-    body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 70% 55% at 15% 12%,rgba(106,169,255,.07) 0%,transparent 55%),radial-gradient(ellipse 55% 45% at 85% 88%,rgba(101,255,179,.05) 0%,transparent 55%);pointer-events:none;z-index:0;}
-    .wrap{max-width:1040px;margin:0 auto;padding:24px;position:relative;z-index:1;}
-    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:24px;padding:18px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 8px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.09);}
+    body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
+    .wrap{max-width:820px;margin:0 auto;padding:24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
     .headerCenter{text-align:center;display:grid;gap:6px;margin-bottom:16px;}
-    h1{margin:0;font-size:22px;background:linear-gradient(135deg,#eaf0ff 0%,#a8c5ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    h1{margin:0;font-size:22px}
     .muted{color:var(--muted);margin:0;line-height:1.55}
     #weekHeader{margin:0;color:rgba(234,240,255,.78);font-weight:800;}
-    label{display:block;margin:12px 0 6px;font-weight:600;color:rgba(234,240,255,.78);}
-    select,input{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:var(--input);color:#fff;padding:12px 12px;outline:none;transition:border-color .2s,box-shadow .2s;}
-    select:focus,input:focus{border-color:rgba(106,169,255,.55);box-shadow:0 0 0 3px rgba(106,169,255,.12);}
+    label{display:block;margin:12px 0 6px}
+    select,input{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:var(--input);color:#fff;padding:12px 12px;outline:none}
     select option:disabled{ color:rgba(234,240,255,.35); }
     .grid{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
-    button{margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;background:linear-gradient(135deg,#6aa9ff 0%,#7ab4ff 45%,#5596f0 100%);color:var(--btnText);font-weight:800;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 4px 16px rgba(106,169,255,.3);font-family:inherit;}
-    button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(106,169,255,.45);}
-    button:not(:disabled):active{transform:translateY(0);box-shadow:0 2px 8px rgba(106,169,255,.2);}
-    /* ===== CUSTOM NAME DROPDOWN ===== */
-    .cs-wrap{position:relative;width:100%;}
-    .cs-btn{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:var(--input);color:#eaf0ff;padding:12px 16px;outline:none;transition:border-color .2s,box-shadow .2s;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:'Sarabun',system-ui,sans-serif;font-size:inherit;text-align:left;-webkit-appearance:none;appearance:none;}
-    .cs-btn:focus{border-color:rgba(168,197,255,.5);box-shadow:0 0 0 3px rgba(77,150,255,.15);}
-    .cs-chevron{transition:transform .2s;color:rgba(255,255,255,.4);font-size:11px;flex-shrink:0;margin-left:8px;}
-    .cs-wrap.open .cs-chevron{transform:rotate(180deg);}
-    .cs-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:999;background:#0e1e35;border:1px solid rgba(255,255,255,.2);border-radius:14px;max-height:55vh;overflow-y:auto;list-style:none;margin:0;padding:6px 0;box-shadow:0 8px 32px rgba(0,0,0,.6);}
-    .cs-wrap.open .cs-list{display:block;}
-    .cs-item{padding:13px 16px;color:#eaf0ff;cursor:pointer;transition:background .1s;user-select:none;-webkit-user-select:none;}
-    .cs-item:hover{background:rgba(255,255,255,.06);}
-    .cs-item:active{background:rgba(106,169,255,.18);}
-    .cs-item.cs-placeholder{color:rgba(234,240,255,.38);}
-    .cs-item.cs-selected{color:#a8c5ff;font-weight:600;}
-    .cs-item.cs-disabled{color:rgba(234,240,255,.28);cursor:default;pointer-events:none;}
-    /* ===== DESKTOP SCALING ===== */
-    @media(min-width:760px){
-      .wrap{padding:36px}
-      .card{padding:32px 36px;border-radius:28px;}
-      .headerCenter{gap:10px;margin-bottom:22px}
-      h1{font-size:32px;letter-spacing:-.3px;}
-      #weekHeader{font-size:16px}
-      .muted{font-size:15px}
-      label{font-size:15px;margin:16px 0 8px}
-      select,input{padding:15px 16px;font-size:15px;border-radius:16px}
-      button{padding:16px;font-size:16px;border-radius:16px;margin-top:20px}
-    }
+    button{margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer}
     button:disabled{opacity:.6;cursor:not-allowed}
     .msg{margin-top:12px;min-height:22px;white-space:pre-line}
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
     .small{font-size:12px;color:var(--muted);margin-top:10px;text-align:center;}
     a.linkbtn{display:block;text-decoration:none}
-    a.linkbtn button{margin-top:10px;background:rgba(255,255,255,.07);color:var(--text);border:1px solid rgba(255,255,255,.17);box-shadow:none;background-image:none;}
+    a.linkbtn button{margin-top:10px;background:rgba(255,255,255,.10);color:var(--text);border:1px solid rgba(255,255,255,.14)}
 
     /* ===== STATUS BAR ===== */
     #statusBar{
@@ -94,8 +63,8 @@
       gap:12px; text-align:center; min-height:122px;
       box-shadow:0 14px 40px rgba(0,0,0,.25);
     }
-    .sbox.ok{ background:linear-gradient(180deg, var(--tint-ok), rgba(0,0,0,.14)); border-color:var(--tint-border-ok); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(101,255,179,.1); }
-    .sbox.bad{ background:linear-gradient(180deg, var(--tint-bad), rgba(0,0,0,.14)); border-color:var(--tint-border-bad); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(255,106,106,.1); }
+    .sbox.ok{ background:linear-gradient(180deg,var(--tint-ok),rgba(0,0,0,.14)); border-color:var(--tint-border-ok); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(101,255,179,.1); }
+    .sbox.bad{ background:linear-gradient(180deg,var(--tint-bad),rgba(0,0,0,.14)); border-color:var(--tint-border-bad); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(255,106,106,.1); }
     .sbox.loading{ background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.08); }
     .sbox-title-row{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; }
     .sbox-title{ font-weight:1000; color:rgba(234,240,255,.96); font-size:18px; letter-spacing:.2px; line-height:1.1; }
@@ -111,7 +80,6 @@
       .sbox-badge{ width:34px; height:34px; }
       .sbox-time{ font-size:30px; }
     }
-    /* summary box */
     .sbox-sum-count{ font-size:40px; font-weight:1200; line-height:1; color:rgba(234,240,255,.96); }
     .sbox-sum-count.all{ color:var(--ok); }
     .sbox-sum-count.none{ color:var(--danger); }
@@ -269,56 +237,7 @@
 
       <form id="f">
         <label>ชื่อ - ชื่อเล่น <span id="prefetchDot" title="สถานะโหลดข้อมูลล่วงหน้า"></span></label>
-        <!-- Custom dropdown (replaces native select on mobile to avoid Android "เรียบร้อย" extra tap) -->
-        <div class="cs-wrap" id="nameSelWrap">
-          <button type="button" class="cs-btn" id="nameSelBtn" aria-haspopup="listbox" aria-expanded="false">
-            <span id="nameSelLabel">— เลือกชื่อ —</span>
-            <span class="cs-chevron">▼</span>
-          </button>
-          <ul class="cs-list" id="nameSelList" role="listbox">
-            <li class="cs-item cs-placeholder" data-value="">— เลือกชื่อ —</li>
-            <li class="cs-item" data-value="สุรเชษฐ์ (ตั้ม)">สุรเชษฐ์ (ตั้ม)</li>
-            <li class="cs-item" data-value="บัญญัติ (แดง)">บัญญัติ (แดง)</li>
-            <li class="cs-item" data-value="รัชเศรษฐ์ (ยศ)">รัชเศรษฐ์ (ยศ)</li>
-            <li class="cs-item" data-value="ชนุดม (ดอน)">ชนุดม (ดอน)</li>
-            <li class="cs-item" data-value="ทรงชัย (ทรง)">ทรงชัย (ทรง)</li>
-            <li class="cs-item" data-value="สุรุ่งรัตน์ (เก่ง)">สุรุ่งรัตน์ (เก่ง)</li>
-            <li class="cs-item" data-value="อติพร (โอ)">อติพร (โอ)</li>
-            <li class="cs-item" data-value="เกสณี (เก๋)">เกสณี (เก๋)</li>
-            <li class="cs-item" data-value="สมภพ (เอก)">สมภพ (เอก)</li>
-            <li class="cs-item" data-value="ฐิตภรณ์ (เบลล์)">ฐิตภรณ์ (เบลล์)</li>
-            <li class="cs-item" data-value="อุมาพร (นก)">อุมาพร (นก)</li>
-            <li class="cs-item" data-value="ณัฐพล (ท๊อด)">ณัฐพล (ท๊อด)</li>
-            <li class="cs-item" data-value="กิตติพงษ์ (พี)">กิตติพงษ์ (พี)</li>
-            <li class="cs-item" data-value="ธนพร (พร)">ธนพร (พร)</li>
-            <li class="cs-item" data-value="รายาวดี (เฟริน)">รายาวดี (เฟริน)</li>
-            <li class="cs-item" data-value="บัญญัติ (บอย)">บัญญัติ (บอย)</li>
-            <li class="cs-item" data-value="ธีรพล (ต้อม)">ธีรพล (ต้อม)</li>
-            <li class="cs-item" data-value="นริศ (เอ็กซ์)">นริศ (เอ็กซ์)</li>
-            <li class="cs-item" data-value="กิตติ (ตี๋)">กิตติ (ตี๋)</li>
-            <li class="cs-item" data-value="จารุวรรณ (จุ๋ม)">จารุวรรณ (จุ๋ม)</li>
-            <li class="cs-item" data-value="วรินทร (ต่อ)">วรินทร (ต่อ)</li>
-            <li class="cs-item" data-value="กิตติศักดิ์ (ใหม่)">กิตติศักดิ์ (ใหม่)</li>
-            <li class="cs-item" data-value="ราชัย (ชัย)">ราชัย (ชัย)</li>
-            <li class="cs-item" data-value="รัญชนา (จีน่า)">รัญชนา (จีน่า)</li>
-            <li class="cs-item" data-value="อรวรา (ผักแพว)">อรวรา (ผักแพว)</li>
-            <li class="cs-item" data-value="ธนกฤษ (พิว)">ธนกฤษ (พิว)</li>
-            <li class="cs-item" data-value="บุญฤทธิ์ (ใหม่)">บุญฤทธิ์ (ใหม่)</li>
-            <li class="cs-item" data-value="จิรายุทธ (ลีโอ)">จิรายุทธ (ลีโอ)</li>
-            <li class="cs-item" data-value="นนทชา (วิว)">นนทชา (วิว)</li>
-            <li class="cs-item" data-value="ยิ่งรัก (กุ้ง)">ยิ่งรัก (กุ้ง)</li>
-            <li class="cs-item" data-value="ศราวุฒิ (บอล)">ศราวุฒิ (บอล)</li>
-            <li class="cs-item" data-value="นันทพงศ์ (โบ๊ท)">นันทพงศ์ (โบ๊ท)</li>
-            <li class="cs-item" data-value="ณัฐวุฒิ (เฟียส)">ณัฐวุฒิ (เฟียส)</li>
-            <li class="cs-item" data-value="กฤษดา (โจ)">กฤษดา (โจ)</li>
-            <li class="cs-item" data-value="รณฤทธิ์ (เม่น)">รณฤทธิ์ (เม่น)</li>
-            <li class="cs-item" data-value="ธีรศักดิ์ (ต่าย)">ธีรศักดิ์ (ต่าย)</li>
-            <li class="cs-item" data-value="ณภัทร (ตัน)">ณภัทร (ตัน)</li>
-            <li class="cs-item" data-value="เอกพจน์ (เอก)">เอกพจน์ (เอก)</li>
-          </ul>
-        </div>
-        <!-- Hidden native select keeps all JS (nameSel.value, change event, form submit) working -->
-        <select name="name" id="nameSel" required style="display:none;" aria-hidden="true" tabindex="-1">
+        <select name="name" id="nameSel" required>
           <option value="">— เลือกชื่อ —</option>
           <option>สุรเชษฐ์ (ตั้ม)</option>
           <option>บัญญัติ (แดง)</option>
@@ -344,7 +263,6 @@
           <option>กิตติศักดิ์ (ใหม่)</option>
           <option>ราชัย (ชัย)</option>
           <option>รัญชนา (จีน่า)</option>
-          <option>อรวรา (ผักแพว)</option>
           <option>ธนกฤษ (พิว)</option>
           <option>บุญฤทธิ์ (ใหม่)</option>
           <option>จิรายุทธ (ลีโอ)</option>
@@ -373,14 +291,7 @@
           </div>
           <div>
             <label>ช่วงเวลา การทำสมาธิ</label>
-            <div class="cs-wrap" id="sessionSelWrap">
-              <button type="button" class="cs-btn" id="sessionSelBtn" aria-haspopup="listbox" aria-expanded="false">
-                <span id="sessionSelLabel">— เลือกช่วง —</span>
-                <span class="cs-chevron">▼</span>
-              </button>
-              <ul class="cs-list" id="sessionSelList" role="listbox"></ul>
-            </div>
-            <select name="session" id="sessionSel" required style="display:none;" aria-hidden="true" tabindex="-1">
+            <select name="session" id="sessionSel" required>
               <option value="">— เลือกช่วง —</option>
               <option value="ครั้งที่ 1 / ตื่นนอน-เช้า">ครั้งที่ 1 / ตื่นนอน-เช้า</option>
               <option value="ครั้งที่ 2 / ระหว่างวัน">ครั้งที่ 2 / ระหว่างวัน</option>
@@ -390,18 +301,7 @@
         </div>
 
         <label>ระยะเวลาในการทำสมาธิ(แต่ละครั้ง)</label>
-        <div class="cs-wrap" id="durationSelWrap">
-          <button type="button" class="cs-btn" id="durationSelBtn" aria-haspopup="listbox" aria-expanded="false">
-            <span id="durationSelLabel">— เลือกระยะเวลา —</span>
-            <span class="cs-chevron">▼</span>
-          </button>
-          <ul class="cs-list" id="durationSelList" role="listbox">
-            <li class="cs-item cs-placeholder" data-value="">— เลือกระยะเวลา —</li>
-            <li class="cs-item" data-value="3-5 นาที">3-5 นาที</li>
-            <li class="cs-item" data-value="10 นาที">10 นาที</li>
-          </ul>
-        </div>
-        <select name="duration" id="durationSel" required style="display:none;" aria-hidden="true" tabindex="-1">
+        <select name="duration" required>
           <option value="">— เลือกระยะเวลา —</option>
           <option>3-5 นาที</option>
           <option>10 นาที</option>
@@ -453,104 +353,6 @@
   }
   function getTodayISO(){ return toISODateLocal(new Date()); }
 
-  // ===== FESTIVE EFFECTS =====
-  function initFestiveEffect(theme) {
-    if (!theme) return;
-    const cfg = {
-      birthday: {
-        colors: ['#ff6b9d','#ffd93d','#6bcb77','#4d96ff','#ff9f43','#c77dff','#ff6b6b','#ffffff'],
-        emojis: ['🎂','🎉','🎈','🥳','🎊'],
-        count: 55,
-        duration: 6000,
-        fadeOut: 2000
-      }
-    }[theme];
-    if (!cfg) return;
-
-    const canvas = document.createElement('canvas');
-    canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:0;';
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
-    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
-    resize();
-    window.addEventListener('resize', resize);
-
-    function mkP(fromTop) {
-      // emoji particles (~12% of the time)
-      if (Math.random() < 0.07 && cfg.emojis) {
-        return {
-          type:'emoji',
-          x: Math.random() * innerWidth,
-          y: fromTop ? -30 - Math.random() * 80 : Math.random() * innerHeight,
-          emoji: cfg.emojis[Math.floor(Math.random() * cfg.emojis.length)],
-          size: 18 + Math.random() * 18,
-          speed: 0.7 + Math.random() * 1.3,
-          wobble: Math.random() * Math.PI * 2,
-          ws: 0.03 + Math.random() * 0.03
-        };
-      }
-      // confetti: rect / circle / ribbon
-      const shape = Math.random() < 0.55 ? 'rect' : (Math.random() < 0.5 ? 'circle' : 'ribbon');
-      return {
-        type:'conf', shape,
-        x: Math.random() * innerWidth,
-        y: fromTop ? -20 - Math.random() * 60 : Math.random() * innerHeight,
-        w: shape === 'ribbon' ? 3 + Math.random() * 3 : 5 + Math.random() * 8,
-        h: shape === 'ribbon' ? 14 + Math.random() * 14 : 5 + Math.random() * 8,
-        color: cfg.colors[Math.floor(Math.random() * cfg.colors.length)],
-        speed: 0.8 + Math.random() * 1.6,
-        angle: Math.random() * Math.PI * 2,
-        spin: (Math.random() - 0.5) * 0.13,
-        wobble: Math.random() * Math.PI * 2,
-        ws: 0.04 + Math.random() * 0.04
-      };
-    }
-
-    const parts = Array.from({ length: cfg.count }, () => mkP(false));
-    const t0 = Date.now();
-
-    (function draw() {
-      const el = Date.now() - t0;
-      if (el > cfg.duration + cfg.fadeOut) {
-        canvas.remove();
-        window.removeEventListener('resize', resize);
-        return;
-      }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const ga = el > cfg.duration ? 1 - (el - cfg.duration) / cfg.fadeOut : 1;
-
-      parts.forEach(p => {
-        p.y += p.speed;
-        p.wobble += p.ws;
-        p.x += Math.sin(p.wobble) * 0.8;
-        if (p.y > canvas.height + 40) {
-          Object.assign(p, mkP(true));
-          return;
-        }
-        ctx.save();
-        ctx.globalAlpha = (p.type === 'emoji' ? 0.88 : 0.82) * ga;
-        if (p.type === 'emoji') {
-          ctx.font = `${p.size}px serif`;
-          ctx.fillText(p.emoji, p.x, p.y);
-        } else {
-          p.angle += p.spin;
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.angle);
-          ctx.fillStyle = p.color;
-          if (p.shape === 'circle') {
-            ctx.beginPath();
-            ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
-            ctx.fill();
-          } else {
-            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-          }
-        }
-        ctx.restore();
-      });
-      requestAnimationFrame(draw);
-    })();
-  }
-
   // ===== GREETING SPLASH =====
   const SKIP_GREET_KEY = "skipGreetOnce";
   const skipGreet = sessionStorage.getItem(SKIP_GREET_KEY) === "1";
@@ -589,14 +391,13 @@
       { m:12, d:31, emoji:"🎉", msg:"ส่งท้ายปีเก่า!", sub:"สวัสดีปีใหม่ล่วงหน้า" },
     ];
 
-    const special = SPECIAL.find(s => s.m === mm && s.d === dd);
-
     const TIME_GREET =
       h >= 5  && h < 12 ? { emoji:"🌅", msg:"อรุณสวัสดิ์" } :
       h >= 12 && h < 17 ? { emoji:"☀️", msg:"สวัสดีตอนบ่าย" } :
       h >= 17 && h < 21 ? { emoji:"🌆", msg:"สวัสดีตอนเย็น" } :
                           { emoji:"🌙", msg:"สวัสดีตอนดึก" };
 
+    const special = SPECIAL.find(s => s.m === mm && s.d === dd);
     const emoji   = special ? special.emoji : TIME_GREET.emoji;
     const greetMsg = special ? special.msg  : TIME_GREET.msg;
 
@@ -634,13 +435,7 @@
     function closeSplash(){
       clearTimeout(phase2Timer);
       splash.classList.add("hide");
-      splash.addEventListener("animationend", () => {
-        splash.remove();
-        const last = localStorage.getItem('meditation_last_name');
-        const sel  = document.getElementById('nameSel');
-        if(last && sel && !sel.value){ sel.value = last; sel.dispatchEvent(new Event('change')); }
-        if(special?.theme) initFestiveEffect(special.theme);
-      }, { once: true });
+      splash.addEventListener("animationend", () => splash.remove(), { once: true });
     }
 
     setTimeout(closeSplash, SPLASH_MS);
@@ -730,105 +525,6 @@
   // ===== SESSION DROPDOWN =====
   const sessionSel = document.getElementById("sessionSel");
 
-  // Custom dropdown controller for sessionSel (dynamic options — uses MutationObserver)
-  (function(){
-    const wrap  = document.getElementById("sessionSelWrap");
-    const btn   = document.getElementById("sessionSelBtn");
-    const label = document.getElementById("sessionSelLabel");
-    const list  = document.getElementById("sessionSelList");
-    if(!wrap || !btn || !list) return;
-
-    function open(){ wrap.classList.add("open"); btn.setAttribute("aria-expanded","true"); }
-    function close(){ wrap.classList.remove("open"); btn.setAttribute("aria-expanded","false"); }
-
-    btn.addEventListener("click", function(e){
-      e.stopPropagation();
-      wrap.classList.contains("open") ? close() : open();
-    });
-
-    list.addEventListener("click", function(e){
-      const item = e.target.closest(".cs-item");
-      if(!item || item.classList.contains("cs-disabled") || item.classList.contains("cs-placeholder")) return;
-      const val = item.dataset.value;
-      label.textContent = val || "— เลือกช่วง —";
-      sessionSel.value = val;
-      list.querySelectorAll(".cs-item").forEach(function(li){ li.classList.remove("cs-selected"); });
-      if(val) item.classList.add("cs-selected");
-      close();
-    });
-
-    document.addEventListener("click", function(e){
-      if(!wrap.contains(e.target)) close();
-    });
-
-    // Rebuild custom list from current native select options
-    function syncList(){
-      const currentVal = sessionSel.value;
-      list.innerHTML = "";
-      Array.from(sessionSel.options).forEach(function(opt){
-        const li = document.createElement("li");
-        const isEmpty = opt.value === "";
-        li.className = "cs-item" + (isEmpty ? " cs-placeholder" : "") + (opt.disabled ? " cs-disabled" : "");
-        li.dataset.value = opt.value;
-        li.textContent = opt.textContent;
-        if(!isEmpty && opt.value === currentVal) li.classList.add("cs-selected");
-        list.appendChild(li);
-      });
-    }
-
-    // Intercept .value setter to keep label in sync (used by updateSessionDropdown to restore prev selection)
-    const origSS = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
-    Object.defineProperty(sessionSel,"value",{
-      get: function(){ return origSS.get.call(this); },
-      set: function(v){
-        origSS.set.call(this, v);
-        const opt = Array.from(this.options).find(function(o){ return o.value === v; });
-        label.textContent = (opt && v) ? opt.textContent : "— เลือกช่วง —";
-        list.querySelectorAll(".cs-item").forEach(function(li){
-          li.classList.toggle("cs-selected", li.dataset.value === v && v !== "");
-        });
-      }
-    });
-
-    // Watch for option changes (innerHTML replace or appendChild in updateSessionDropdown)
-    new MutationObserver(function(){ syncList(); }).observe(sessionSel, { childList: true, subtree: true });
-
-    syncList(); // initial render
-  })();
-
-  // Custom dropdown controller for durationSel (static options)
-  const durationSel = document.getElementById("durationSel");
-  (function(){
-    const wrap  = document.getElementById("durationSelWrap");
-    const btn   = document.getElementById("durationSelBtn");
-    const label = document.getElementById("durationSelLabel");
-    const list  = document.getElementById("durationSelList");
-    if(!wrap || !btn || !list || !durationSel) return;
-
-    function open(){ wrap.classList.add("open"); btn.setAttribute("aria-expanded","true"); }
-    function close(){ wrap.classList.remove("open"); btn.setAttribute("aria-expanded","false"); }
-
-    btn.addEventListener("click", function(e){
-      e.stopPropagation();
-      wrap.classList.contains("open") ? close() : open();
-    });
-
-    list.addEventListener("click", function(e){
-      const item = e.target.closest(".cs-item");
-      if(!item || item.classList.contains("cs-placeholder")) return;
-      const val = item.dataset.value;
-      label.textContent = val || "— เลือกระยะเวลา —";
-      durationSel.value = val;
-      list.querySelectorAll(".cs-item").forEach(function(li){ li.classList.remove("cs-selected"); });
-      if(val) item.classList.add("cs-selected");
-      close();
-    });
-
-    document.addEventListener("click", function(e){
-      if(!wrap.contains(e.target)) close();
-    });
-  })();
-
   const SESSION_KEYS = [
     { key:"s1", label:"ครั้งที่ 1 / ตื่นนอน-เช้า" },
     { key:"s2", label:"ครั้งที่ 2 / ระหว่างวัน"   },
@@ -865,64 +561,6 @@
   const statusBar   = document.getElementById("statusBar");
   const statusBoxes = document.getElementById("statusBoxes");
   const nameSel     = document.getElementById("nameSel");
-
-  // ===== CUSTOM DROPDOWN CONTROLLER =====
-  (function(){
-    const wrap  = document.getElementById("nameSelWrap");
-    const btn   = document.getElementById("nameSelBtn");
-    const label = document.getElementById("nameSelLabel");
-    const list  = document.getElementById("nameSelList");
-    if(!wrap || !btn || !list) return;
-
-    function open(){
-      wrap.classList.add("open");
-      btn.setAttribute("aria-expanded","true");
-    }
-    function close(){
-      wrap.classList.remove("open");
-      btn.setAttribute("aria-expanded","false");
-    }
-
-    btn.addEventListener("click", function(e){
-      e.stopPropagation();
-      wrap.classList.contains("open") ? close() : open();
-    });
-
-    list.addEventListener("click", function(e){
-      const item = e.target.closest(".cs-item");
-      if(!item) return;
-      const val = item.dataset.value;
-      // Update label
-      label.textContent = val || "— เลือกชื่อ —";
-      // Sync hidden native select
-      nameSel.value = val;
-      // Mark selected item
-      list.querySelectorAll(".cs-item").forEach(function(li){ li.classList.remove("cs-selected"); });
-      if(val) item.classList.add("cs-selected");
-      close();
-      // Fire change event so existing nameSel listeners trigger
-      nameSel.dispatchEvent(new Event("change"));
-    });
-
-    // Close on outside tap/click
-    document.addEventListener("click", function(e){
-      if(!wrap.contains(e.target)) close();
-    });
-
-    // Sync custom dropdown when code sets nameSel.value directly (e.g. localStorage restore)
-    const origDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
-    Object.defineProperty(nameSel,"value",{
-      get: function(){ return origDescriptor.get.call(this); },
-      set: function(v){
-        origDescriptor.set.call(this, v);
-        label.textContent = v || "— เลือกชื่อ —";
-        list.querySelectorAll(".cs-item").forEach(function(li){
-          li.classList.toggle("cs-selected", li.dataset.value === v && v !== "");
-        });
-      }
-    });
-  })();
-
   let fallbackAbort = null;
   let fallbackCache = {};
   let allDoneTimer  = null;
@@ -959,7 +597,7 @@
       </div>`;
     }
     const sumCls=doneCount===3?"all":doneCount===0?"none":"";
-    const sumBox=`<div class="sbox sbox-sum"><div class="sbox-title">สรุป</div><div class="sbox-sum-count ${sumCls}">${doneCount}/3</div></div>`;
+    const sumBox=`<div class="sbox"><div class="sbox-title">สรุป</div><div class="sbox-sum-count ${sumCls}">${doneCount}/3</div></div>`;
     statusBoxes.innerHTML=box("ครั้งที่ 1",s1)+box("ครั้งที่ 2",s2)+box("ครั้งที่ 3",s3)+sumBox;
     statusBar.classList.add("visible");
 
@@ -1132,7 +770,6 @@
 
         // อัปเดต prefetchCache
         const savedName = (nameSel.value || "").trim();
-        if(savedName) localStorage.setItem('meditation_last_name', savedName);
         const savedStatus = out.status || null;
         if(savedStatus && savedName){
           if(!prefetchCache) prefetchCache = { date: getTodayISO(), data: {} };
