@@ -269,98 +269,6 @@
     .pchip.ok{border-color:var(--ok-border);background:var(--ok-dim);color:#ccffe3}
 
     /* ═══════════════════════════════════════
-       LEADERBOARD
-    ═══════════════════════════════════════ */
-    .lbSection{margin-bottom:20px}
-    .lbTop3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}
-    @media(max-width:700px){.lbTop3{grid-template-columns:1fr}}
-
-    .lbPodium{
-      position:relative;overflow:hidden;
-      border-radius:var(--r);
-      padding:20px 16px 16px;
-      display:flex;flex-direction:column;align-items:center;
-      text-align:center;gap:8px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-      box-shadow:var(--shadow-sm);
-      transition:transform .18s ease,box-shadow .18s ease;
-    }
-    .lbPodium:hover{transform:translateY(-2px);box-shadow:0 20px 50px rgba(0,0,0,.40)}
-    .lbPodium.rank1{
-      background:linear-gradient(160deg,rgba(255,210,50,.12),rgba(255,180,0,.06),rgba(0,0,0,.08));
-      border-color:rgba(255,210,50,.28);
-      box-shadow:0 12px 40px rgba(0,0,0,.30),0 0 40px rgba(255,200,0,.06);
-    }
-    .lbPodium.rank2{
-      background:linear-gradient(160deg,rgba(180,200,230,.10),rgba(140,170,210,.05),rgba(0,0,0,.08));
-      border-color:rgba(180,200,230,.24);
-    }
-    .lbPodium.rank3{
-      background:linear-gradient(160deg,rgba(205,130,80,.10),rgba(180,100,60,.05),rgba(0,0,0,.08));
-      border-color:rgba(205,130,80,.24);
-    }
-
-    .lbMedal{
-      width:44px;height:44px;border-radius:999px;
-      display:grid;place-items:center;
-      font-size:20px;
-      border:2px solid rgba(255,255,255,.12);
-      flex:0 0 auto;
-    }
-    .lbMedal.m1{background:linear-gradient(135deg,rgba(255,215,0,.30),rgba(255,180,0,.15));border-color:rgba(255,215,0,.40)}
-    .lbMedal.m2{background:linear-gradient(135deg,rgba(192,210,230,.22),rgba(160,185,210,.12));border-color:rgba(192,210,230,.36)}
-    .lbMedal.m3{background:linear-gradient(135deg,rgba(205,130,80,.22),rgba(180,100,60,.12));border-color:rgba(205,130,80,.36)}
-
-    .lbRankNum{
-      font-size:11px;font-weight:950;letter-spacing:.4px;
-      color:var(--muted);text-transform:uppercase;
-    }
-    .lbAvatar{
-      width:46px;height:46px;border-radius:999px;
-      display:grid;place-items:center;
-      font-size:16px;font-weight:1000;
-      border:2px solid rgba(255,255,255,.12);
-      background:rgba(100,150,255,.14);
-      color:rgba(234,240,255,.90);
-      flex:0 0 auto;
-    }
-    .lbName{font-size:15px;font-weight:950;color:var(--text);line-height:1.2}
-    .lbPct{font-size:28px;font-weight:1200;line-height:1;letter-spacing:-.5px}
-    .lbPct.full{color:var(--ok)}
-    .lbPct.hi{color:var(--ok)}
-    .lbPct.mid{color:var(--mid)}
-    .lbPct.lo{color:var(--danger)}
-    .lbDays{font-size:12px;font-weight:800;color:var(--muted)}
-
-    /* Compact leaderboard rows (4th+) */
-    .lbRows{display:grid;gap:8px}
-    .lbRow{
-      display:grid;
-      grid-template-columns:36px 1fr auto auto;
-      gap:10px;align-items:center;
-      padding:11px 14px;
-      border-radius:var(--r-sm);
-      border:1px solid rgba(255,255,255,.07);
-      background:rgba(255,255,255,.03);
-      box-shadow:0 4px 16px rgba(0,0,0,.18);
-    }
-    .lbRowRank{
-      font-size:13px;font-weight:1000;color:var(--muted);
-      text-align:center;
-    }
-    .lbRowName{font-size:14px;font-weight:900;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .lbRowBarWrap{display:flex;align-items:center;gap:8px;min-width:0}
-    .lbRowBar{
-      flex:1;height:7px;border-radius:999px;
-      background:rgba(255,255,255,.08);overflow:hidden;
-    }
-    .lbRowBar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,rgba(48,209,106,.9),rgba(48,209,106,.45));border-radius:999px}
-    .lbRowBar i.mid{background:linear-gradient(90deg,rgba(243,196,58,.9),rgba(243,196,58,.45))}
-    .lbRowBar i.lo{background:linear-gradient(90deg,rgba(255,77,77,.9),rgba(255,77,77,.45))}
-    .lbRowPct{font-size:13px;font-weight:950;color:var(--muted);white-space:nowrap;min-width:38px;text-align:right}
-
-    /* ═══════════════════════════════════════
        MAIN TABLE
     ═══════════════════════════════════════ */
     .tableWrap{
@@ -655,13 +563,6 @@
     </div>
   </div>
 
-  <!-- ── LEADERBOARD ── -->
-  <div class="secLabel">อันดับสัปดาห์นี้</div>
-  <div class="lbSection">
-    <div class="lbTop3" id="lbTop3"><!-- filled by JS --></div>
-    <div class="lbRows" id="lbRows"><!-- filled by JS --></div>
-  </div>
-
   <!-- ── MAIN TABLE ── -->
   <div class="secLabel">รายละเอียดรายคน</div>
   <div class="tableWrap">
@@ -732,9 +633,6 @@ const partialTitle = document.getElementById("partialTitle");
 const noneTitle    = document.getElementById("noneTitle");
 const partialList  = document.getElementById("partialList");
 const noneList     = document.getElementById("noneList");
-
-const lbTop3 = document.getElementById("lbTop3");
-const lbRows = document.getElementById("lbRows");
 
 const hoverTip = document.getElementById("hoverTip");
 const tipHdr   = document.getElementById("tipHdr");
@@ -873,48 +771,6 @@ function renderChips(el,names,cls){
   el.innerHTML=names.map(n=>`<span class="pchip ${cls}">${esc(n)}</span>`).join("");
 }
 
-function renderLeaderboard(rows){
-  const sorted=[...rows].sort((a,b)=>(b.percent||0)-(a.percent||0)||(b.doneDays||0)-(a.doneDays||0)||String(a.name).localeCompare(String(b.name),"th"));
-
-  const medals=["🥇","🥈","🥉"];
-  const medalCls=["m1","m2","m3"];
-  const podiumCls=["rank1","rank2","rank3"];
-
-  // Top 3
-  lbTop3.innerHTML=sorted.slice(0,3).map((p,i)=>{
-    const pct=Number(p.percent||0);
-    const cls=pctCls(pct);
-    return `
-      <div class="lbPodium ${podiumCls[i]||""}">
-        <div class="lbRankNum">อันดับ ${i+1}</div>
-        <div class="lbMedal ${medalCls[i]||""}">${medals[i]||""}</div>
-        <div class="lbAvatar">${esc(initials(p.name))}</div>
-        <div class="lbName">${esc(p.name||"")}</div>
-        <div class="lbPct ${cls}">${pct}%</div>
-        <div class="lbDays">ครบ ${p.doneDays||0}/7 วัน · ${p.totalDone||0}/${p.totalSlots||21} ครั้ง</div>
-      </div>`;
-  }).join("");
-
-  // 4th+
-  const rest=sorted.slice(3);
-  if(!rest.length){lbRows.innerHTML="";return}
-  lbRows.innerHTML=rest.map((p,i)=>{
-    const pct=Number(p.percent||0);
-    const barCls=pct>=60?"":pct>=30?"mid":"lo";
-    return `
-      <div class="lbRow">
-        <div class="lbRowRank">${i+4}</div>
-        <div>
-          <div class="lbRowName">${esc(p.name||"")}</div>
-        </div>
-        <div class="lbRowBarWrap" style="min-width:120px">
-          <div class="lbRowBar"><i class="${barCls}" style="width:${Math.min(100,pct)}%"></i></div>
-        </div>
-        <div class="lbRowPct">${pct}%</div>
-      </div>`;
-  }).join("");
-}
-
 function render(out){
   const w=out.week;
   elWeek.textContent=`จันทร์ ${thaiDate(w.startISO)} – อาทิตย์ ${thaiDate(w.endISO)}`;
@@ -1017,9 +873,6 @@ function render(out){
   else if(Math.abs(delta)<0.5) cmpDelta.textContent=`แทบไม่เปลี่ยน (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
   else if(delta>0) cmpDelta.innerHTML=`<span class="up">▲ ดีขึ้น ${delta.toFixed(0)}%</span> จากเมื่อวาน`;
   else cmpDelta.innerHTML=`<span class="dn">▼ ลดลง ${Math.abs(delta).toFixed(0)}%</span> จากเมื่อวาน`;
-
-  // Leaderboard
-  renderLeaderboard(rowsAll);
 
   // Main table
   const rows=[...rowsAll].sort((a,b)=>(b.percent||0)-(a.percent||0)||String(a.name).localeCompare(String(b.name),"th"));
