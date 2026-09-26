@@ -50,6 +50,7 @@
     .cs-item:active{background:rgba(106,169,255,.18);}
     .cs-item.cs-placeholder{color:rgba(234,240,255,.38);}
     .cs-item.cs-selected{color:#a8c5ff;font-weight:600;}
+    .cs-item.cs-disabled{color:rgba(234,240,255,.28);cursor:default;pointer-events:none;}
     /* ===== DESKTOP SCALING ===== */
     @media(min-width:760px){
       .wrap{padding:36px}
@@ -372,7 +373,14 @@
           </div>
           <div>
             <label>ช่วงเวลา การทำสมาธิ</label>
-            <select name="session" id="sessionSel" required>
+            <div class="cs-wrap" id="sessionSelWrap">
+              <button type="button" class="cs-btn" id="sessionSelBtn" aria-haspopup="listbox" aria-expanded="false">
+                <span id="sessionSelLabel">— เลือกช่วง —</span>
+                <span class="cs-chevron">▼</span>
+              </button>
+              <ul class="cs-list" id="sessionSelList" role="listbox"></ul>
+            </div>
+            <select name="session" id="sessionSel" required style="display:none;" aria-hidden="true" tabindex="-1">
               <option value="">— เลือกช่วง —</option>
               <option value="ครั้งที่ 1 / ตื่นนอน-เช้า">ครั้งที่ 1 / ตื่นนอน-เช้า</option>
               <option value="ครั้งที่ 2 / ระหว่างวัน">ครั้งที่ 2 / ระหว่างวัน</option>
@@ -382,7 +390,18 @@
         </div>
 
         <label>ระยะเวลาในการทำสมาธิ(แต่ละครั้ง)</label>
-        <select name="duration" required>
+        <div class="cs-wrap" id="durationSelWrap">
+          <button type="button" class="cs-btn" id="durationSelBtn" aria-haspopup="listbox" aria-expanded="false">
+            <span id="durationSelLabel">— เลือกระยะเวลา —</span>
+            <span class="cs-chevron">▼</span>
+          </button>
+          <ul class="cs-list" id="durationSelList" role="listbox">
+            <li class="cs-item cs-placeholder" data-value="">— เลือกระยะเวลา —</li>
+            <li class="cs-item" data-value="3-5 นาที">3-5 นาที</li>
+            <li class="cs-item" data-value="10 นาที">10 นาที</li>
+          </ul>
+        </div>
+        <select name="duration" id="durationSel" required style="display:none;" aria-hidden="true" tabindex="-1">
           <option value="">— เลือกระยะเวลา —</option>
           <option>3-5 นาที</option>
           <option>10 นาที</option>
@@ -710,6 +729,105 @@
 
   // ===== SESSION DROPDOWN =====
   const sessionSel = document.getElementById("sessionSel");
+
+  // Custom dropdown controller for sessionSel (dynamic options — uses MutationObserver)
+  (function(){
+    const wrap  = document.getElementById("sessionSelWrap");
+    const btn   = document.getElementById("sessionSelBtn");
+    const label = document.getElementById("sessionSelLabel");
+    const list  = document.getElementById("sessionSelList");
+    if(!wrap || !btn || !list) return;
+
+    function open(){ wrap.classList.add("open"); btn.setAttribute("aria-expanded","true"); }
+    function close(){ wrap.classList.remove("open"); btn.setAttribute("aria-expanded","false"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      wrap.classList.contains("open") ? close() : open();
+    });
+
+    list.addEventListener("click", function(e){
+      const item = e.target.closest(".cs-item");
+      if(!item || item.classList.contains("cs-disabled") || item.classList.contains("cs-placeholder")) return;
+      const val = item.dataset.value;
+      label.textContent = val || "— เลือกช่วง —";
+      sessionSel.value = val;
+      list.querySelectorAll(".cs-item").forEach(function(li){ li.classList.remove("cs-selected"); });
+      if(val) item.classList.add("cs-selected");
+      close();
+    });
+
+    document.addEventListener("click", function(e){
+      if(!wrap.contains(e.target)) close();
+    });
+
+    // Rebuild custom list from current native select options
+    function syncList(){
+      const currentVal = sessionSel.value;
+      list.innerHTML = "";
+      Array.from(sessionSel.options).forEach(function(opt){
+        const li = document.createElement("li");
+        const isEmpty = opt.value === "";
+        li.className = "cs-item" + (isEmpty ? " cs-placeholder" : "") + (opt.disabled ? " cs-disabled" : "");
+        li.dataset.value = opt.value;
+        li.textContent = opt.textContent;
+        if(!isEmpty && opt.value === currentVal) li.classList.add("cs-selected");
+        list.appendChild(li);
+      });
+    }
+
+    // Intercept .value setter to keep label in sync (used by updateSessionDropdown to restore prev selection)
+    const origSS = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
+    Object.defineProperty(sessionSel,"value",{
+      get: function(){ return origSS.get.call(this); },
+      set: function(v){
+        origSS.set.call(this, v);
+        const opt = Array.from(this.options).find(function(o){ return o.value === v; });
+        label.textContent = (opt && v) ? opt.textContent : "— เลือกช่วง —";
+        list.querySelectorAll(".cs-item").forEach(function(li){
+          li.classList.toggle("cs-selected", li.dataset.value === v && v !== "");
+        });
+      }
+    });
+
+    // Watch for option changes (innerHTML replace or appendChild in updateSessionDropdown)
+    new MutationObserver(function(){ syncList(); }).observe(sessionSel, { childList: true, subtree: true });
+
+    syncList(); // initial render
+  })();
+
+  // Custom dropdown controller for durationSel (static options)
+  const durationSel = document.getElementById("durationSel");
+  (function(){
+    const wrap  = document.getElementById("durationSelWrap");
+    const btn   = document.getElementById("durationSelBtn");
+    const label = document.getElementById("durationSelLabel");
+    const list  = document.getElementById("durationSelList");
+    if(!wrap || !btn || !list || !durationSel) return;
+
+    function open(){ wrap.classList.add("open"); btn.setAttribute("aria-expanded","true"); }
+    function close(){ wrap.classList.remove("open"); btn.setAttribute("aria-expanded","false"); }
+
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      wrap.classList.contains("open") ? close() : open();
+    });
+
+    list.addEventListener("click", function(e){
+      const item = e.target.closest(".cs-item");
+      if(!item || item.classList.contains("cs-placeholder")) return;
+      const val = item.dataset.value;
+      label.textContent = val || "— เลือกระยะเวลา —";
+      durationSel.value = val;
+      list.querySelectorAll(".cs-item").forEach(function(li){ li.classList.remove("cs-selected"); });
+      if(val) item.classList.add("cs-selected");
+      close();
+    });
+
+    document.addEventListener("click", function(e){
+      if(!wrap.contains(e.target)) close();
+    });
+  })();
 
   const SESSION_KEYS = [
     { key:"s1", label:"ครั้งที่ 1 / ตื่นนอน-เช้า" },
