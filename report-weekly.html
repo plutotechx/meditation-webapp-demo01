@@ -608,17 +608,17 @@
     const actions = document.querySelector(".actions");
     actions.style.visibility = "hidden";
 
-    // ✅ Fix SVG ใน real DOM ก่อน html2canvas clone
-    // (getBoundingClientRect ใน cloned doc คืน 0 เสมอ)
-    const svgFixed = [];
-    document.querySelectorAll("svg").forEach(svg => {
-      const hadW = svg.hasAttribute("width");
-      const hadH = svg.hasAttribute("height");
-      const r = svg.getBoundingClientRect();
-      if (!hadW) svg.setAttribute("width",  String(Math.max(Math.round(r.width),  1)));
-      if (!hadH) svg.setAttribute("height", String(Math.max(Math.round(r.height), 1)));
-      svgFixed.push({ svg, hadW, hadH });
-    });
+    // ✅ Patch createPattern — html2canvas 1.4.x bug:
+    // ถ้า element มี height/width = 0 จะ throw "canvas width or height of 0"
+    // แก้โดย intercept call และบังคับให้ canvas มีขนาด min 1px
+    const origCreatePattern = CanvasRenderingContext2D.prototype.createPattern;
+    CanvasRenderingContext2D.prototype.createPattern = function(image, ...args) {
+      if (image instanceof HTMLCanvasElement) {
+        if (image.width  === 0) image.width  = 1;
+        if (image.height === 0) image.height = 1;
+      }
+      return origCreatePattern.call(this, image, ...args);
+    };
 
     try {
       const canvas = await html2canvas(document.querySelector(".page"), {
@@ -630,7 +630,6 @@
         logging: false,
       });
 
-      // แปลงเป็น PNG และ trigger download
       const link = document.createElement("a");
       const dateStr = new Date().toLocaleDateString("th-TH",{day:"2-digit",month:"2-digit",year:"2-digit"}).replace(/\//g,"-");
       link.download = `meditation-report-${dateStr}.png`;
@@ -639,11 +638,8 @@
     } catch (e) {
       alert("เกิดข้อผิดพลาด: " + e.message);
     } finally {
-      // Restore SVG attributes
-      svgFixed.forEach(({ svg, hadW, hadH }) => {
-        if (!hadW) svg.removeAttribute("width");
-        if (!hadH) svg.removeAttribute("height");
-      });
+      // Restore createPattern
+      CanvasRenderingContext2D.prototype.createPattern = origCreatePattern;
       actions.style.visibility = "";
       btn.textContent = "📷 บันทึกเป็นรูปภาพ";
       btn.disabled = false;
