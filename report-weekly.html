@@ -608,20 +608,26 @@
     const actions = document.querySelector(".actions");
     actions.style.visibility = "hidden";
 
+    // ✅ Fix SVG ใน real DOM ก่อน html2canvas clone
+    // (getBoundingClientRect ใน cloned doc คืน 0 เสมอ)
+    const svgFixed = [];
+    document.querySelectorAll("svg").forEach(svg => {
+      const hadW = svg.hasAttribute("width");
+      const hadH = svg.hasAttribute("height");
+      const r = svg.getBoundingClientRect();
+      if (!hadW) svg.setAttribute("width",  String(Math.max(Math.round(r.width),  1)));
+      if (!hadH) svg.setAttribute("height", String(Math.max(Math.round(r.height), 1)));
+      svgFixed.push({ svg, hadW, hadH });
+    });
+
     try {
       const canvas = await html2canvas(document.querySelector(".page"), {
         backgroundColor: "#081224",
         scale: 2,
         useCORS: true,
+        allowTaint: true,
+        foreignObjectRendering: false,
         logging: false,
-        onclone: (doc) => {
-          // Fix SVG elements ที่ไม่มี width/height → html2canvas render ไม่ได้
-          doc.querySelectorAll("svg").forEach(svg => {
-            const rect = svg.getBoundingClientRect();
-            if (!svg.getAttribute("width"))  svg.setAttribute("width",  Math.max(rect.width,  1));
-            if (!svg.getAttribute("height")) svg.setAttribute("height", Math.max(rect.height, 1));
-          });
-        },
       });
 
       // แปลงเป็น PNG และ trigger download
@@ -633,6 +639,11 @@
     } catch (e) {
       alert("เกิดข้อผิดพลาด: " + e.message);
     } finally {
+      // Restore SVG attributes
+      svgFixed.forEach(({ svg, hadW, hadH }) => {
+        if (!hadW) svg.removeAttribute("width");
+        if (!hadH) svg.removeAttribute("height");
+      });
       actions.style.visibility = "";
       btn.textContent = "📷 บันทึกเป็นรูปภาพ";
       btn.disabled = false;
