@@ -371,7 +371,7 @@
         </div>
         <div class="donut-layout">
           <div class="donut-chart">
-            <svg viewBox="0 0 36 36">
+            <svg width="100" height="100" viewBox="0 0 36 36">
               <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#333" stroke-width="3"/>
               <g id="donutSegs"></g>
             </svg>
@@ -611,9 +611,17 @@
     try {
       const canvas = await html2canvas(document.querySelector(".page"), {
         backgroundColor: "#081224",
-        scale: 2,              // ความละเอียด 2× (Retina)
+        scale: 2,
         useCORS: true,
         logging: false,
+        onclone: (doc) => {
+          // Fix SVG elements ที่ไม่มี width/height → html2canvas render ไม่ได้
+          doc.querySelectorAll("svg").forEach(svg => {
+            const rect = svg.getBoundingClientRect();
+            if (!svg.getAttribute("width"))  svg.setAttribute("width",  Math.max(rect.width,  1));
+            if (!svg.getAttribute("height")) svg.setAttribute("height", Math.max(rect.height, 1));
+          });
+        },
       });
 
       // แปลงเป็น PNG และ trigger download
