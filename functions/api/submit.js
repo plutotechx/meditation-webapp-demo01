@@ -1,11 +1,14 @@
-// functions/api/submit.js — v3.0
+// functions/api/submit.js — v3.1
 // =====================================================================
 // CHANGELOG v1 → v3.0:
 //   [FIX] เพิ่ม retry 1 ครั้ง เมื่อ GAS timeout (cold start protection)
 //   [FIX] เพิ่ม timeout เป็น 28s (จาก 25s) — GAS อาจใช้เวลา 20s+ ตอน cold start
 //   [FIX] retry delay 2s ก่อน retry ครั้งที่ 2
 //   [FIX] error message ที่ชัดเจนขึ้น สำหรับแต่ละ case
-//   [FIX] เพิ่ม x-retry-count header เพื่อ debug
+//   [FIX] เพิ่ม X-Attempts header เพื่อ debug
+// CHANGELOG v3.0 → v3.1:
+//   [FIX] เปลี่ยน success condition เป็น out.ok === true (ป้องกัน GAS คืน HTML พร้อม 200)
+//   [FIX] เพิ่ม || {} หลัง JSON.parse ป้องกัน TypeError เมื่อ GAS คืน null
 // =====================================================================
 
 import { json } from "./_util.js";
@@ -132,15 +135,15 @@ export async function onRequestPost(ctx) {
 
         // อ่าน raw text ก่อน แล้วค่อย parse — เพื่อ debug ถ้า GAS คืน non-JSON
         const rawText = await res.text().catch(() => "");
-        try { out = JSON.parse(rawText); } catch (_) { out = {}; }
+        try { out = JSON.parse(rawText) || {}; } catch (_) { out = {}; }
 
-        // log raw ถ้า parse ไม่ได้ (เก็บแค่ 300 ตัวอักษร)
+        // log raw ถ้า parse ไม่ได้ หรือ GAS คืน non-JSON (เก็บแค่ 300 ตัวอักษร)
         if (!out || out.ok === undefined) {
           console.log("[submit] GAS raw response:", rawText.slice(0, 300));
         }
 
-        // ✅ สำเร็จ — ใช้เงื่อนไขเดียวกับ production (out.ok !== false)
-        if (res.ok && out.ok !== false) break;
+        // ✅ สำเร็จ — ต้องได้ ok: true ชัดเจน ป้องกัน GAS คืน HTML error พร้อม HTTP 200
+        if (res.ok && out.ok === true) break;
 
         // GAS ตอบกลับแต่มี error — ถ้าเป็น server_busy ให้ retry
         if (out.error === "server_busy_retry" && attempt < MAX_RETRIES) {
