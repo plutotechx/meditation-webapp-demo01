@@ -1,15 +1,17 @@
-// functions/api/prefetchToday.js — v3.0
+// functions/api/prefetchToday.js — v3.1
 // =====================================================================
 // CHANGELOG v1 → v3.0:
 //   [FIX 1] ลด CACHE_TTL จาก 55 → 20 วินาที
 //   [FIX 2] ถ้า URL มี _bust parameter → ข้าม Cloudflare cache
 //   [UNCHANGED] ทุกอย่างอื่นเหมือนเดิม
+// CHANGELOG v3.0 → v3.1:
+//   [FIX] เพิ่ม FETCH_TIMEOUT_MS จาก 9s → 20s ครอบคลุม GAS cold start (~15-20s)
 // =====================================================================
 
 import { json } from "./_util.js";
 
 const CACHE_TTL_SECONDS = 20;   // ✅ v3.0: ลดจาก 55 → 20 วินาที
-const FETCH_TIMEOUT_MS  = 9000;
+const FETCH_TIMEOUT_MS  = 20000; // ✅ v3.1: เพิ่มจาก 9s → 20s ครอบคลุม GAS cold start
 
 export async function onRequestGet({ request, env }) {
   try {
