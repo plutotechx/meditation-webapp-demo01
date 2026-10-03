@@ -1,3 +1,9 @@
+// functions/api/checkStatus.js — v3.1
+// CHANGELOG v3.0 → v3.1:
+//   [FIX] เปลี่ยน success condition เป็น out.ok === true (ป้องกัน GAS คืน HTML พร้อม 200)
+//   [FIX] เพิ่ม || {} หลัง JSON.parse ป้องกัน TypeError เมื่อ GAS คืน null
+//   [FIX] แก้เงื่อนไข cache ให้ตรงกัน
+
 import { json } from "./_util.js";
 
 const CACHE_TTL     = 45;
@@ -54,8 +60,8 @@ export async function onRequestGet(ctx) {
       try {
         if (attempt > 0) await new Promise(r => setTimeout(r, RETRY_DELAY));
         res = await fetchWithTimeout(gasUrl, FETCH_TIMEOUT);
-        out = await res.json().catch(() => ({}));
-        if (res.ok && out.ok !== false) break;
+        out = (await res.json().catch(() => null)) || {};
+        if (res.ok && out.ok === true) break;
       } catch (fetchErr) {
         if (attempt === 1) {
           const isTimeout = fetchErr?.name === "AbortError";
@@ -74,7 +80,7 @@ export async function onRequestGet(ctx) {
       },
     });
 
-    if (res.ok && out.ok !== false) {
+    if (res.ok && out.ok === true) {
       ctx.waitUntil(cache.put(cacheKey, response.clone()));
     }
     return response;
